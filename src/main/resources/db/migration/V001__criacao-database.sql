@@ -1,7 +1,4 @@
 /* DATABASE */
 
-CREATE DATABASE IF NOT exists ${ph_dbname} CHARACTER SET utf8 COLLATE utf8_general_ci;
-
-ALTER DATABASE ${ph_dbname} CHARACTER SET utf8 COLLATE utf8_general_ci;
-
-USE ${ph_dbname};
+SELECT 'CREATE DATABASE ${ph_dbname} WITH ENCODING = "UTF8" LOCALE = "pt_BR.UTF-8" TEMPLATE template0'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${ph_dbname}');

@@ -1,0 +1,73 @@
+{
+	"info": {
+		"_postman_id": "55fd66cc-28c1-49ab-b091-4b4255bfbf3e",
+		"name": "ms-accounts-java",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "accounts",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "8ad88d11-4300-4a0a-87ce-d9b5bb101793",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "vieco",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic 8ad88d11-4300-4a0a-87ce-d9b5bb101793",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/accounts",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "http://localhost:8083"
+		}
+	]
+}

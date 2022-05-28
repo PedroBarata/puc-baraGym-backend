@@ -1,0 +1,1055 @@
+openapi: '3.0.3'
+info:
+  title: ms-accounts-java
+  version: 1.3.0
+  description: MS para operações de saldo, extrato e transferências.
+  contact:
+    name: ': wallet squad'
+    email: rafael.magalhaes@sulamerica.com.br
+externalDocs:
+  url: 'https://dev.azure.com/vieco/Ecossistema/_wiki/wikis/Ecossistema.wiki/41/ms-accounts-java'
+  description: Documentação
+servers:
+  - url: '{protocol}://{gateway-env}.vieco.com.br/accounts/v1'
+    variables:
+      protocol:
+        enum:
+          - http
+          - https
+        default: https
+      gateway-env:
+        enum:
+          - apidev
+          - apiqa
+          - apihml
+          - api
+        default: apidev
+  - url: '{protocol}://{balancer-env}.vieco.com.br/ms-accounts/v1'
+    variables:
+      protocol:
+        enum:
+          - http
+          - https
+        default: https
+      balancer-env:
+        enum:
+          - alb-dev
+          - alb-qa
+          - alb-hml
+          - alb
+        default: alb-dev
+  - url: 'http://localhost:8080/ms-accounts/v1'
+tags:
+  - name: monitoring
+    description: Verificação de status e métricas da aplicação.
+  - name: onboarding
+    description: Serviços de criação de conta.
+  - name: accounts
+    description: Consultas de saldos, transações e informações da conta.
+  - name: pix
+    description: Operações relacionadas a chave PIX da conta.
+paths:
+  /actuator/health:
+    get:
+      tags:
+        - monitoring
+      summary: Status da aplicação
+      security:
+        - Monitoring: []
+        - Gateway-access-token: []
+          Gateway-client-id: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /actuator/info:
+    get:
+      tags:
+        - monitoring
+      summary: Informações sobre a aplicação
+      security:
+        - Monitoring: []
+        - Gateway-access-token: []
+          Gateway-client-id: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfoResponse'
+        '401':
+          description: Unauthorized (Este endpoint necessita de token de acesso com perfil `MONITORING`)
+        '403':
+          description: Forbidden (Este endpoint necessita de token de acesso com perfil `MONITORING`)
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /customers/{customer-code}/accounts:
+    get:
+      tags:
+        - accounts
+      summary: Lista as contas existentes para o usuário corrente.
+      description: |
+        Para acessos do tipo `CUSTOMER` são são retornados apenas os códigos de contas de propriedade do usuário subject do token de acesso.
+        Nas situaçoes de acesso administrativo (perfil `ADMIN`), quaisquer contas podem ser listadas.
+      security:
+        - User: []
+        - Gateway-access-token: []
+          Gateway-client-id: []
+      parameters:
+        - name: customer-code
+          in: path
+          description: Código do cliente
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerAccounts'
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - onboarding
+      summary: Cria uma conta digital.
+      description: |
+        Primeiro passo para a criação da conta. Neste serviço, criamos um recurso account vinculado à identidade obtida através do token de acesso.
+        
+        Para esse processo será necessário que o cliente já tenha preenchido todas as informações do cadastro e enviado todos os documentos solicitados
+
+        Neste momento, a conta ficara com `status` = `KYC_PENDING` e ainda não estará funcional. Com todos os dados validados a conta será aprovada e as funcionalidades de cash-out/cash-in serão habilitadas.
+      security:
+        - User: []
+        - Gateway-access-token: []
+          Gateway-client-id: []
+      parameters:
+        - name: customer-code
+          in: path
+          description: Código do cliente
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Detalhamento das contas que devem ser criadas
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAccount'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreAccount'
+        '400':
+          description: |
+            Quando já existir uma account criada para o código de customer enviado.
+            
+            | errorId | Title |
+            | -- | -- | 
+            | 001014001 |Conta com status diferente de KYC_PENDING. |
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /accounts/{customer-code}/contacts:
+    get:
+      tags:
+        - accounts
+      summary: Lista os contatos
+      security:
+        - User: []
+        - Gateway-access-token: []
+          Gateway-client-id: []
+      parameters:
+        - name: customer-code
+          in: path
+          description: Código do cliente
+          required: true
+          schema:
+            type: string
+        - name: document
+          in: query
+          description: filtra pelo documento
+          schema:
+            type: string
+            example: '21703073037'
+
+        - name: mobileNumber
+          in: query
+          description: filtra pelo número de contato
+          schema:
+            type: string
+            example: '7493299248'
+
+        - name: email
+          in: query
+          description: filtra pelo email
+          schema:
+            type: string
+            example: 'lois.bartoletti26@hotmail.com'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListContacts'
+  /accounts/{account}/balance:
+    get:
+      tags:
+        - accounts
+      summary: Consulta o saldo da conta
+      security:
+        - User: []
+        - Gateway-access-token: []
+          Gateway-client-id: []
+      parameters:
+        - name: account
+          in: path
+          description: Código da conta corrente
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /accounts/{account}/transactions:
+    get:
+      tags:
+        - accounts
+      summary: Consulta as transações da conta
+      security:
+        - User: []
+        - Gateway-access-token: []
+          Gateway-client-id: []
+      parameters:
+        - name: account
+          in: path
+          description: Código da conta corrente
+          required: true
+          schema:
+            type: string
+        - name: dateFrom
+          in: query
+          description: Data de início do intervalo de consulta
+          required: true
+          schema:
+            type: string
+            format: date
+            example: '2021-10-05'
+        - name: dateTo
+          in: query
+          description: Data de término do intervalo de consulta
+          required: true
+          schema:
+            type: string
+            format: date
+            example: '2021-10-05'
+        - name: page
+          in: query
+          description: 'Número de página solicitado. Atenção: os números de página inciam em `0`.'
+          required: false
+          schema:
+            type: integer
+            example: 0
+            default: 0
+        - name: size
+          in: query
+          description: Tamanho máximo da página de dados retornada.
+          required: false
+          schema:
+            type: integer
+            example: 10
+            default: 20
+        - name: sort
+          in: query
+          description: 'Ordenação utilizada. São suportadas as seguintes chaves: `date`, `dateTime` e `amount`. Para cada parâmetro é possivel informar se a ordenação desejada é ascendente (`asc`) ou descendente (`desc`). Por exemplo: `date,desc` '
+          required: false
+          schema:
+            default: 'dateTime,desc'
+            type: array
+            items:
+              type: string
+              example: 'dateTime,desc'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionPage'
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /accounts/{accountCode}/pix-keys/verification-code:
+    post:
+      tags:
+        - pix
+      summary: Obtém o código (UUID) de verificação de cadastro de chave PIX.
+      description: |
+        Este recurso é apenas acessado para chaves PIX do tipo `EMAIL` ou `PHONE`.
+      security:
+        - User: []
+        - Gateway-access-token: []
+          Gateway-client-id: []
+      parameters:
+        - name: accountCode
+          in: path
+          description: Código da conta do cliente
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Chave PIX e tipo de chave pix a ser cadastrada.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendPixVerificationCode'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PixVerificationCode'
+        '400':
+          description: |
+            Quando já existir uma account criada para o código de customer enviado.
+            
+            | errorId | Title |
+            | -- | -- | 
+            | 001020001 | Exceção genérica retornada pelo parceiro. |
+            | 001020002 | Chave PIX já se encontra cadastrada. |
+            | 001020003 | Conta não encontrada pelo parceiro. |
+            | 001020004 | Exceção não mapeada da API do parceiro. |
+            | 001020005 | Processo de KYC incompleto. |
+            | 001020006 | Conta não encontrada localmente. |
+            | 001020007 | Chave PIX inválida ou não é um celular ou email. |
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /accounts/{accountCode}/pix-keys:
+    get:
+      tags:
+        - pix
+      summary: Consulta as chaves PIX associadas à conta
+      security:
+        - User: []
+        - Gateway-access-token: []
+          Gateway-client-id: []
+      parameters:
+        - name: account
+          in: path
+          description: Código da conta corrente
+          required: true
+          schema:
+            type: string
+            example: '6c68db0b-a7be-4a02-8453-e0d6103dd190'
+        - name: status
+          in: query
+          description: Status de aprovação do cadastro da chave PIX
+          required: false
+          schema:
+            type: string
+            enum:
+              - APPROVED
+              - DENIED
+              - PROCESSING
+        - name: keyType
+          in: query
+          description: Tipo da chave PIX
+          required: false
+          schema:
+            type: string
+            enum:
+              - CPF
+              - PHONE
+              - EMAIL
+              - RANDOM
+        - name: key
+          in: query
+          description: A chave PIX propriamente dita
+          required: false
+          schema:
+            type: string
+            example: '84767411114'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListPixKeys'
+        '400':
+          description: |
+            Bad request.
+            
+            | **errorId** | **Title** |
+            | -- | -- |
+            | 001022001 |Não foi possível localizar a conta xxx-xxx-xxx-xxx.|            
+            | 001022002 |Problema de cadastro. A conta xxx-xxx-xxx-xxx não possui o código de cadastro do parceiro.|            
+            | 001022003 |Ocorreu uma falha no processamento da conta. Conta não encontrada.|            
+            | 001022004 |Ocorreu um erro inesperado. Não é possível processar a operação.|
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - pix
+      summary: Cadastra uma chave PIX.
+      description: |
+        Cadastra uma chave PIX para o usuário logado. Este recurso retorna uma chave com o status `PROCESSING`.
+      security:
+        - User: []
+        - Gateway-access-token: []
+          Gateway-client-id: []
+      parameters:
+        - name: accountCode
+          in: path
+          description: Código da conta do cliente
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Chave PIX e tipo de chave pix a ser cadastrada.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PixKeyRegister'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountPixKey'
+        '400':
+          description: |
+            Quando já existir uma account criada para o código de customer enviado.
+            
+            | errorId | Title |
+            | -- | -- | 
+            | 001021001 | Falha ao tentar chamar a API do parceiro. |
+            | 001021002 | Chave PIX já se encontra cadastrada. |
+            | 001021003 | Conta não encontrada. |
+            | 001021004 | Falha ao tentar chamar a API do parceiro. |
+            | 001021005 | Campo inválido. |
+            | 001021006 | UUID MFA inválido. |
+            | 001021007 | Código MFA inválido. |
+            | 001021008 | Processo de KYC incompleto. |
+            | 001021009 | Conta não encontrada. |
+            | 001021010 | Campo MFA inválido. |
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /accounts/{account}:
+    delete:
+      tags:
+        - onboarding
+      summary: Remove uma conta.
+      description: Funcionalidade ativa somente para perfis de administrador, em ambientes não produtivos e mediante a configuração de feature toggle.
+      security:
+        - User: []
+        - Gateway-access-token: []
+          Gateway-client-id: []
+      parameters:
+        - name: account
+          in: path
+          description: Código da conta corrente.
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Conta removida.
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  securitySchemes:
+    Gateway-client-id:
+      description: 'client_id de acesso ao **Gateway**.'
+      type: apiKey
+      name: client_id
+      in: header
+    Gateway-access-token:
+      description: 'access_token de acesso ao **Gateway**.'
+      type: apiKey
+      name: access_token
+      in: header
+    User:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: User ID Token de acesso ao **ALB**.
+    Monitoring:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Monitoring ID Token de acesso ao **ALB**.
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: 'UP'
+          description: 'Status do serviço.'
+        components:
+          type: array
+          items:
+            type: object
+    InfoResponse:
+      type: object
+      properties:
+        git:
+          type: object
+          description: 'Informações sobre o SCM do projeto.'
+          properties:
+            branch:
+              type: string
+              description: 'nome do branch'
+              example: 'dev'
+            commit:
+              type: object
+              description: 'detalhes do commit'
+              properties:
+                id:
+                  type: string
+                  description: 'versão curta do hash do commit'
+                  example: '0f0554c'
+                time:
+                  type: string
+                  format: date-time
+                  description: 'Timestamp relativo ao momento em que ocorreu o commit.'
+                  example: '2021-10-05T22:16:21.886Z'
+        build:
+          type: object
+          description: 'Informações sobre o build da aplicação.'
+          properties:
+            artifact:
+              type: string
+              example: 'ms-accounts-java'
+
+            name:
+              type: string
+              example: 'ms-accounts-java'
+
+            time:
+              type: string
+              format: date-time
+              example: '2021-10-05T22:16:21.886Z'
+
+            version:
+              type: string
+              example: '0.0.1'
+
+            group:
+              type: string
+              example: 'br.com.sulamerica'
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: '500'
+          description: 'Repete o código de status http da resposta, por exemplo 403 para Forbidden. Pode haver uma diferença entre o que o servidor respondeu e o que o cliente recebeu devido a um proxy alterando o código de status http. É apenas um recurso para ajudar na depuração, utilize no código cliente o status code http. Alterações não devem ser consideradas quebra de compatibilidade.'
+        type:
+          type: string
+          example: 'urn:erro:recurso-nao-encontrado'
+          description: 'URN que identifica o tipo do problema.'
+        title:
+          type: string
+          description: 'Um breve resumo do tipo de problema. Não deve mudar para ocorrências do mesmo tipo, exceto para fins de localização.'
+          example: 'O cadastro do usuário está inválido.'
+        detail:
+          type: string
+          description: 'Descrição detalhada do problema.'
+          example: 'O cliente possui saldo insuficiente para efetuar uma transferência no valor de R$100,00.'
+        timestamp:
+          type: string
+          format: date-time
+          description: 'Timestamp relativo ao momento em que ocorreu o registro desta resposta.'
+          example: '2021-09-20T15:12:22.6914128Z'
+        userMessage:
+          type: string
+          description: 'Descrição completa e voltada para o usuário final sobre o que deu errado.'
+          example: 'O cadastro do usuário está inválido. Verifique os campos e tente novamente.'
+        errorId:
+          type: string
+          example: 100001001
+          description: 'Código de erro em formato numérico. Alterações não devem ser consideradas quebra de compatibilidade.'
+        requestId:
+          type: string
+          example: 1665a0d9-1afe-11ec-8f1e-4ccc6af85e2c
+          description: |
+            Identificador da requisição. Geramos uma ID de solicitação exclusiva para cada request de entrada. Esse ID exclusivo é então retornado por meio do cabeçalho HTTP chamado x-request-id e também retornado neste detalhamento de erro.
+
+            Como alternativa, você pode especificar o cabeçalho x-request-id ao fazer uma solicitação. O valor deve ter entre 20 e 200 caracteres e consistir em letras ASCII, dígitos ou os caracteres +, /, = e -. IDs inválidos serão ignorados e substituídos.
+        fields:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: 'Nome do campo que sofreu restrições de validação.'
+                example: 'nome'
+              userMessage:
+                type: string
+                description: 'Descrição completa e voltada para o usuário final sobre o que deu errado especificamente com este field.'
+                example: 'Nome não pode ser maior que 40 caracteres.'
+    PaginationResponse:
+      type: object
+      properties:
+        size:
+          type: integer
+          example: '10'
+          description: 'Tamanho máximo de página solicitado.'
+        totalElements:
+          type: integer
+          description: 'Total de elementos na página.'
+          example: 98
+        totalPages:
+          type: integer
+          description: 'Total de páginas navegáveis para esta consulta.'
+          example: '10'
+        pageNumber:
+          type: integer
+          description: 'Número da página atual. Atenção: os números de página inciam em zero `0`.'
+          example: '9'
+        pageElements:
+          type: integer
+          description: 'Número de elementos da página atual.'
+          example: 8
+    ListContacts:
+      type: object
+      properties:
+        id:
+          type: number
+          description: id do cliente
+          example: 3715
+        document:
+          type: string
+          description: documento do cliente
+          example: 21703073037
+        mobileNumber:
+          type: string
+          description: numero de celular
+          example: 7493299248
+        email:
+          type: string
+          description: email do cliente
+          example: lois.bartoletti26@hotmail.com
+    CreateAccount:
+      type: object
+      properties:
+        deviceDescription:
+          type: string
+          description: JSON com informações disponíveis sobre o dispositivo que efetuou o cadastro.
+          example: '{ "deviceID": "00000000-54b3-e7c7-0000-000046bffd97", "so": "Android 5.0" }'
+    PreAccount:
+      type: object
+      properties:
+        accountCode:
+          type: string
+          example: 'd55d1d88-74d1-4680-9278-783cf0a4881b'
+          description: 'Código da conta criada.'
+        createdAt:
+          type: string
+          format: date-time
+          description: 'Timestamp relativo ao momento de criação da conta.'
+          example: '2021-09-20T15:12:22.6914128Z'
+    Balance:
+      type: object
+      properties:
+        online:
+          type: boolean
+          example: false
+          description: 'Retornará `true` quando o valor do saldo for instantâneo e não proveniente de nenhum mecanismo de cache.'
+        balance:
+          type: number
+          multipleOf: 0.01
+          description: Saldo em reais (R$).
+          example: 5.02
+        timestamp:
+          type: string
+          format: date-time
+          description: 'Timestamp relativo ao momento em que este saldo foi apurado.'
+          example: '2021-09-20T15:12:22.6914128Z'
+    TransactionPage:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/PaginationResponse'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+    Transaction:
+      type: object
+      properties:
+        code:
+          type: string
+          example: 'd55d1d88-74d1-4680-9278-783cf0a4881b'
+          description: 'Código único da transação.'
+        amount:
+          type: number
+          multipleOf: 0.01
+          description: Valor debitado ou creditado na conta. Débitos são valores negativos e créditos valores positivos.
+          example: -100.02
+        date:
+          type: string
+          format: date
+          description: 'Data na qual esta transação é listada dentre os lançamentos diários.'
+          example: '2021-09-20'
+        datetime:
+          type: string
+          format: date-time
+          description: 'Timestamp relativo ao momento em que esta transação foi registrada. Considere o retorno sempre em conformidade com a ISO-8601 e com offset zero (UTC)'
+          example: '2021-09-20T15:12:22.6914128Z'
+        description:
+          type: string
+          description: 'Texto informativo e opcional descrevendo a finalidade da transação.'
+          example: 'Transação efetuada em sandbox para fins de teste.'
+        timestamp:
+          type: string
+          format: date-time
+          description: |
+            Timestamp relativo ao momento em que esta transação foi apurada.
+
+            Quando `online`=`true`, corresponderá a data-hora atual.
+
+            Quando `online`=`false`, corresponderá ao último momento no qual os dados foram atualizados.'
+          example: '2021-09-20T15:12:22.6914128Z'
+        online:
+          type: boolean
+          description: 'Retornará `true` quando o status da transação for instantâneo e não proveniente de nenhum mecanismo de cache.'
+          example: 'false'
+
+    CustomerAccounts:
+      type: array
+      items:
+        type: object
+        properties:
+          accountCode:
+            type: string
+            description: código da conta
+            example: '6ea0176a-a1b8-4414-8a30-aee33193f83d'
+          brCode:
+            type: string
+            description: BRCode para depósitos na conta por meio da função 'PIX - copia e cola'.
+            example: '00020101021126440014br.gov.bcb.pix0122fulano2019@example.com5204000053039865802BR'
+          status:
+            type: string
+            enum: [ PRE_ACCOUNT, SIMPLE_PENDING, SIMPLE, KYC_PENDING, KYC_APPROVED ]
+            description: status da conta
+            example: PRE_ACCOUNT
+          createdAt:
+            type: string
+            format: date-time
+            description: 'Timestamp relativo ao momento em que ocorreu a criação deste registro.'
+            example: '2021-09-20T15:12:22.6914128Z'
+    DecodedPixKey:
+      type: object
+      properties:
+        pixKey:
+          type: string
+          example: umem********@teste.com
+          description: chave pix informada pelo usuário
+        keyType:
+          type: string
+          enum: [ CPF, CNPJ, EMAIL, CELULAR, RANDOM ]
+          example: EMAIL
+          description: Tipo de chave PIX
+        endToEndId:
+          type: string
+          example: E1393589320211125203100864615804
+          description: EndToEnd ID recebido ao fazer a consulta DICT da chave
+        bankAccount:
+          type: object
+          properties:
+            bankName:
+              type: string
+              example: Itaú Unibanco S.A.
+              description: Nome da instituição financeira favorecida
+            bankAgencyNumber:
+              type: string
+              example: 1500
+              description: Agência da conta do favorecido
+            bankAccountNumber:
+              type: string
+              example: 00611833
+              description: Número da conta do favorecido
+            bankAccountType:
+              type: string
+              enum: [ CC, CD, CG, CI, PG, PP ]
+              example: CC
+              description: nome da instituição financeira favorecida
+            decodedAccountOwner:
+              type: object
+              properties:
+                holderName:
+                  type: string
+                  example: Iris Mitchell
+                  description: nome do titular da conta
+                holderDocument:
+                  type: string
+                  example: '***080001**'
+                  description: documento que consta na conta
+                holderDocumentType:
+                  type: string
+                  example: cpf
+                  description: tipo de documento que consta na conta
+    UpdateKyc:
+      type: object
+      properties:
+        accountCode:
+          type: string
+          example: 'd55d1d88-74d1-4680-9278-783cf0a4881b'
+          description: 'Código da conta.'
+        brCode:
+          type: string
+          example: '00020101021126440014br.gov.bcb.pix0122fulano2019@example.com5204000053039865802BR'
+          description: 'BRCode gerado.'
+    SendPixVerificationCode:
+      type: object
+      properties:
+        pixKeyType:
+          type: string
+          enum: [ PHONE, EMAIL ]
+          description: Tipo da Chave PIX
+          example: PHONE
+        pixKey:
+          type: string
+          example:  '+5521969855547'
+          description: 'Valor da chave PIX.'
+    PixVerificationCode:
+      type: object
+      properties:
+        accountCode:
+          type: string
+          example: 'd55d1d88-74d1-4680-9278-783cf0a4881b'
+          description: 'Código da conta do cliente.'
+        uuidVerificationCode:
+          type: string
+          example: 'd55d1d88-74d1-4680-9278-783cf0a4881b'
+          description: 'Código (UUID) da verificação.'
+    PixKeyRegister:
+      type: object
+      properties:
+        pixKeyType:
+          type: string
+          enum: [ PHONE, EMAIL, RANDOM, CPF ]
+          description: Tipo da Chave PIX
+          example: PHONE
+        pixKey:
+          type: string
+          example:  '+5521969855547'
+          description: 'Valor da chave PIX.'
+        verificationCode:
+          type: string
+          example:  'AB123'
+          description: |
+            Valor do código de verificação enviado por SMS ou email. 
+            Campo utilizado apenas para `pixKeyType = [PHONE, EMAIL]`
+        uuidVerificationCode:
+          type: string
+          example:  '486d1968-0b9e-44ec-8579-bb5a7388a858'
+          description: 'UUID do código de verificação `verificationCode`.'
+    AccountPixKey:
+      type: object
+      properties:
+        accountCode:
+          type: string
+          example: 'd55d1d88-74d1-4680-9278-783cf0a4881b'
+          description: 'Código da conta do cliente.'
+        pixKeyType:
+          type: string
+          enum: [ PHONE, EMAIL, RANDOM, CPF ]
+          description: Tipo da Chave PIX
+          example: PHONE
+        pixKey:
+          type: string
+          example:  '+5521969855547'
+          description: 'Valor da chave PIX.'
+        status:
+          type: string
+          enum: [PROCESSING, DENIED, APPROVED]
+          description: 'Status da criação da chave PIX.'
+          example: PROCESSING
+    ListPixKeys:
+      type: array
+      items:
+        type: object
+        properties:
+          pixKeyType:
+            type: string
+            enum: [ CPF, PHONE, EMAIL, RANDOM ]
+            description: Tipo da chave PIX.
+            example: 'CPF'
+          pixKey:
+            type: string
+            description: A chave PIX propriamente dita.
+            example: '84767411114'
+          status:
+            type: string
+            enum: [ APPROVED, DENIED, PROCESSING ]
+            description: Status de aprovação do cadastro da chave PIX.
+            example: 'APPROVED'

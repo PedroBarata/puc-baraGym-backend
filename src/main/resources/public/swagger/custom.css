@@ -1,0 +1,25 @@
+.swagger-ui .topbar {
+    background-color: #fff;
+    padding: 5px 0;
+}
+
+.topbar-wrapper img[alt="Swagger UI"] {
+    visibility: hidden;
+}
+
+.swagger-ui .topbar-wrapper a {
+  background-image: url(./img/logo.png);
+  height: 70px;
+  background-repeat: no-repeat;
+  background-size: auto 70px;
+}
+
+.swagger-ui .topbar .download-url-wrapper .download-url-button {
+  background: #0c2c72;
+  pointer-events: none;
+}    
+
+.swagger-ui .topbar .download-url-wrapper input[type="text"]{
+  border: 2px solid #0c2c72;
+  pointer-events: none;
+}

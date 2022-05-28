@@ -26,7 +26,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(securedEnabled = true,prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
  private static final String[] GROUP_ACTUATOR_HEALTH = {RoleEnum.ROLE_ADMIN.name()};
@@ -102,4 +102,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
  }
+
 }

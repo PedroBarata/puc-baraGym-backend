@@ -1,4 +1,6 @@
-FROM southamerica-east1-docker.pkg.dev/vieco-services/vieco-java-11-alpine/vieco-java-11-alpine:latest
+FROM alpine:3.15
+
+ARG version=11.0.15.9.1
 
 WORKDIR /app
 

@@ -5,6 +5,7 @@ import br.com.barata.baragym.security.enums.RoleEnum;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +27,8 @@ public class JwtTokenUtil implements Serializable {
 
  static final String CLAIM_KEY_CREATED = "created";
  static final String CLAIM_KEY_EXPIRED = "exp";
+
+ static final String BEARER = "Bearer ";
 
  /* Valores que vem do application.properties */
  @Value("${jwt.secret}")
@@ -88,8 +91,13 @@ public class JwtTokenUtil implements Serializable {
  private Claims obtemClaimsDoToken(String token) { // Realiza o parser do token, para extrair as informações contidas
   // em seu corpo
   Claims claims;
+  token = StringUtils.remove(token, BEARER);
   try {
-   claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+   claims = Jwts
+           .parser()
+           .setSigningKey(secret)
+           .parseClaimsJws(token)
+           .getBody();
   } catch (Exception e) {
    claims = null;
   }

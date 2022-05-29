@@ -91,6 +91,25 @@ paths:
         Apenas administradores (`ADMIN`).
       security:
         - bearerAuthToken: []
+      parameters:
+        - name: page
+          in: query
+          description: | 
+            Número de página solicitado. <br/>
+            **Atenção: os números de página inciam em `0`.**
+          required: false
+          schema:
+            type: integer
+            example: 0
+            default: 0
+        - name: size
+          in: query
+          description: Tamanho máximo da página de dados retornada.
+          required: false
+          schema:
+            type: integer
+            example: 20
+            default: 10
       responses:
         '200':
           description: OK

@@ -34,8 +34,9 @@ public class UsuarioController {
 
  @PostMapping
  //@PreAuthorize("hasAnyRole('ADMIN')")
- public void criaUsuario(@Valid @RequestBody UsuarioRequest request) {
-  usuarioService.criarUsuario(request);
+ public UsuarioResponse criaUsuario(@Valid @RequestBody UsuarioRequest request) {
+  Usuario usuario = usuarioService.criarUsuario(request);
+  return converter.convertToResponse(usuario);
  }
 
 }

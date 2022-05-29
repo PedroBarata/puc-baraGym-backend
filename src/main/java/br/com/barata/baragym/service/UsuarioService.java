@@ -34,8 +34,7 @@ public class UsuarioService {
   return converter.convertToModel(optEntity.orElseThrow(UsuarioNaoEncontradoException::new));
  }
 
- public void criarUsuario(UsuarioRequest request) {
-
+ public Usuario criarUsuario(UsuarioRequest request) {
   UsuarioEntity entity = UsuarioEntity
 		  .builder()
 		  .nome(request.getNome())
@@ -43,6 +42,8 @@ public class UsuarioService {
 		  .senha(stringUtils.encodePassword(request.getSenha()))
 		  .build();
 
-  repository.save(entity);
+  UsuarioEntity persistedEntity = repository.save(entity);
+
+  return converter.convertToModel(persistedEntity);
  }
 }

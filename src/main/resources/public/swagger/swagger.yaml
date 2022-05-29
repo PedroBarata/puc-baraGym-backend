@@ -83,6 +83,29 @@ paths:
           description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
         '500':
           description: Erro interno
+    get:
+      tags:
+        - usuario
+      summary: Obtém todos os usuários
+      description: |
+        Apenas administradores (`ADMIN`).
+      security:
+        - bearerAuthToken: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioPageResponse'
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
   /usuarios/{matricula}:
     get:
       tags:
@@ -114,7 +137,6 @@ paths:
           description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
         '500':
           description: Erro interno
-
 components:
   securitySchemes:
     bearerAuthToken:
@@ -160,6 +182,64 @@ components:
           type: string
           example: '12345'
           description: 'Senha de acesso'
+    
+    SortResponse:
+      type: object
+      properties:
+        empty:
+          type: boolean
+          example: true
+          description: Verifica se a lista está vazia ou não.
+        sorted:
+          type: boolean
+          example: true
+          description: Verifica se a lista está ordenada ou não.
+        unsorted:
+          type: boolean
+          example: true
+          description: Verifica se a lista está fora de ordenação ou não.
+    PageableResponse:
+      type: object
+      properties:
+        pageable:
+         type: object
+         properties:
+          sort:
+           $ref: '#/components/schemas/SortResponse'
+        last:
+          type: boolean
+          example: false
+          description: Verifica se é a última página.
+        totalElements:
+          type: number
+          example: 5
+          description: Número de elementos totais.
+        totalPages:
+          type: number
+          example: 5
+          description: Número de páginas totais.
+        size:
+          type: number
+          example: 1
+          description: Número de elementos por página.
+        number:
+          type: number
+          example: 0
+          description: Número de da página.
+        sort:
+         $ref: '#/components/schemas/SortResponse'
+        first:
+          type: boolean
+          example: true
+          description: Verifica se é a primeira página.
+        numberOfElements:
+          type: number
+          example: 5
+          description: Número de elementos totais.
+        empty:
+          type: boolean
+          example: false
+          description: Verifica se a lista está vazia ou não.
     CreateUsuarioRequest:
       type: object
       properties:
@@ -190,3 +270,12 @@ components:
           type: string
           description: Senha do usuário
           example: '78041'
+    UsuarioPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/UsuarioResponse'
+        pageable:
+          $ref: '#/components/schemas/PageableResponse'

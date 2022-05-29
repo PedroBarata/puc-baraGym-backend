@@ -9,10 +9,19 @@ import org.springframework.stereotype.Component;
 public class UsuarioConverter {
 
  public Usuario convertToModel(UsuarioEntity entity) {
-  return Usuario.builder().build();
+  return Usuario
+          .builder()
+          .email(entity.getEmail())
+          .nome(entity.getNome())
+          .matricula(entity.getMatricula())
+          .build();
  }
 
  public UsuarioEntity convertToEntity(Usuario usuario) {
-  return UsuarioEntity.builder().build();
+  return UsuarioEntity
+          .builder()
+          .email(usuario.getEmail())
+          .nome(usuario.getNome())
+          .build();
  }
 }

@@ -15,15 +15,16 @@ public class JwtUser implements UserDetails {
 
  private static final long serialVersionUID = -427534579035911926L;
 
- private final String matricula;
  private final String email;
  private final String password;
  private final Collection<? extends GrantedAuthority> authorities;
+ @Getter
+ private final String matricula;
 
 
- public JwtUser(String matricula, String email, String password, Collection<? extends GrantedAuthority> authorities) {
-  this.matricula = matricula;
+ public JwtUser(String email, String matricula, String password, Collection<? extends GrantedAuthority> authorities) {
   this.email = email;
+  this.matricula = matricula;
   this.password = password;
   this.authorities = authorities;
  }

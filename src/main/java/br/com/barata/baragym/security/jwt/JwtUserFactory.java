@@ -16,8 +16,8 @@ public class JwtUserFactory {
 
 	public static JwtUser create(UsuarioEntity usuarioEntity) { //Gera um JWTUser com base nos dados de um usuario
 		return new JwtUser(
-				usuarioEntity.getMatricula(),
 				usuarioEntity.getEmail(),
+				usuarioEntity.getMatricula(),
 				usuarioEntity.getSenha(),
 				mapToGrantedAuthorities(RoleEnum.valueOf(usuarioEntity.getRole()))
 				);

@@ -46,7 +46,8 @@ public class UsuarioEntity {
  private String senha;
 
  @Column(name = "role")
- private String role;
+ @Builder.Default
+ private String role = RoleEnum.ROLE_USER.name();
 
  @CreationTimestamp
  @Column(name = "dt_created")

@@ -87,7 +87,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		  .antMatchers(HttpMethod.GET, "/actuator/health/liveness").hasAnyAuthority(GROUP_ACTUATOR_HEALTH)
 		  .antMatchers(HttpMethod.GET, "/actuator/health/readiness").hasAnyAuthority(GROUP_ACTUATOR_HEALTH)
 		  .antMatchers(HttpMethod.GET, "/actuator/**").hasAnyAuthority(GROUP_ACTUATOR_HEALTH)
-		  .antMatchers("/api/auth/**").permitAll()
+		  .antMatchers("/login/**").permitAll()
 		  .antMatchers(HttpMethod.GET, "/public/**").permitAll() //Swagger
 
 		  .anyRequest().authenticated()

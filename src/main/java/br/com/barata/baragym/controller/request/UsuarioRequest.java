@@ -1,11 +1,13 @@
 package br.com.barata.baragym.controller.request;
 
 
+import lombok.Builder;
 import lombok.Getter;
 
 import javax.validation.constraints.Email;
 
 @Getter
+@Builder
 public class UsuarioRequest {
 
  @Email

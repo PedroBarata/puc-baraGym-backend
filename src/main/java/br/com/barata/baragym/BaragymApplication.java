@@ -1,15 +1,13 @@
 package br.com.barata.baragym;
 
-import br.com.barata.baragym.commons.utils.StringUtils;
 import br.com.barata.baragym.entity.UsuarioEntity;
-import br.com.barata.baragym.model.Usuario;
 import br.com.barata.baragym.repository.UsuarioRepository;
 import br.com.barata.baragym.security.enums.RoleEnum;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
@@ -21,14 +19,18 @@ public class BaragymApplication {
  }
 
  @Bean
- CommandLineRunner init(UsuarioRepository userRepository, PasswordEncoder encoder) {
+ CommandLineRunner init(UsuarioRepository userRepository) {
   return args -> {
-   initUsers(userRepository, encoder);
+   initUsers(userRepository);
   };
  }
 
- private void initUsers(UsuarioRepository userRepository, PasswordEncoder encoder) {
-  StringUtils stringUtils = new StringUtils();
+ @Bean
+ BCryptPasswordEncoder bCryptPasswordEncoder() {
+  return new BCryptPasswordEncoder();
+ }
+
+ private void initUsers(UsuarioRepository userRepository) {
 
   Optional<UsuarioEntity> optionalUsuarioEntity = userRepository.findByEmail("admin@helpdesk.com");
   if (optionalUsuarioEntity.isEmpty()) {
@@ -36,7 +38,7 @@ public class BaragymApplication {
 		   .builder()
 		   .nome("admin")
 		   .email("admin@helpdesk.com")
-		   .senha(encoder.encode("123456"))
+		   .senha(bCryptPasswordEncoder().encode("123456"))
 		   .role(RoleEnum.ROLE_ADMIN.name())
 		   .build());
   }

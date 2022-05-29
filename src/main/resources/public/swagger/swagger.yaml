@@ -211,7 +211,7 @@ components:
           description: Verifica se a lista está vazia ou não.
         sorted:
           type: boolean
-          example: true
+          example: false
           description: Verifica se a lista está ordenada ou não.
         unsorted:
           type: boolean
@@ -292,4 +292,38 @@ components:
           items:
             $ref: '#/components/schemas/UsuarioResponse'
         pageable:
-          $ref: '#/components/schemas/PageableResponse'
+          type: object
+        last:
+          type: boolean
+          example: false
+          description: Verifica se é a última página.
+        totalElements:
+          type: number
+          example: 5
+          description: Número de elementos totais.
+        totalPages:
+          type: number
+          example: 5
+          description: Número de páginas totais.
+        size:
+          type: number
+          example: 1
+          description: Número de elementos por página.
+        number:
+          type: number
+          example: 0
+          description: Número de da página.
+        sort:
+         $ref: '#/components/schemas/SortResponse'
+        first:
+          type: boolean
+          example: true
+          description: Verifica se é a primeira página.
+        numberOfElements:
+          type: number
+          example: 5
+          description: Número de elementos totais.
+        empty:
+          type: boolean
+          example: false
+          description: Verifica se a lista está vazia ou não.

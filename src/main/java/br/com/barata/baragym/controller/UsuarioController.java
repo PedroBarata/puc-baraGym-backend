@@ -5,18 +5,16 @@ import br.com.barata.baragym.controller.response.UsuarioResponse;
 import br.com.barata.baragym.controller.response.converter.UsuarioResponseConverter;
 import br.com.barata.baragym.model.Usuario;
 import br.com.barata.baragym.security.annotation.CheckSecurity;
-import br.com.barata.baragym.security.jwt.JwtTokenUtil;
 import br.com.barata.baragym.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
 @RestController
-@RequestMapping(value = "/usuario")
+@RequestMapping(value = "/usuario", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UsuarioController {
 
  @Autowired

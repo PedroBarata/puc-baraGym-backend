@@ -220,11 +220,6 @@ components:
     PageableResponse:
       type: object
       properties:
-        pageable:
-         type: object
-         properties:
-          sort:
-           $ref: '#/components/schemas/SortResponse'
         last:
           type: boolean
           example: false
@@ -296,4 +291,5 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UsuarioResponse'
+        pageable:
           $ref: '#/components/schemas/PageableResponse'

@@ -1,5 +1,6 @@
 package br.com.barata.baragym;
 
+import br.com.barata.baragym.commons.utils.StringUtils;
 import br.com.barata.baragym.entity.UsuarioEntity;
 import br.com.barata.baragym.model.Usuario;
 import br.com.barata.baragym.repository.UsuarioRepository;
@@ -20,20 +21,22 @@ public class BaragymApplication {
  }
 
  @Bean
- CommandLineRunner init(UsuarioRepository userRepository, PasswordEncoder passwordEncoder) {
+ CommandLineRunner init(UsuarioRepository userRepository, PasswordEncoder encoder) {
   return args -> {
-   initUsers(userRepository, passwordEncoder);
+   initUsers(userRepository, encoder);
   };
  }
 
- private void initUsers(UsuarioRepository userRepository, PasswordEncoder passwordEncoder) {
+ private void initUsers(UsuarioRepository userRepository, PasswordEncoder encoder) {
+  StringUtils stringUtils = new StringUtils();
+
   Optional<UsuarioEntity> optionalUsuarioEntity = userRepository.findByEmail("admin@helpdesk.com");
   if (optionalUsuarioEntity.isEmpty()) {
    userRepository.save(UsuarioEntity
 		   .builder()
 		   .nome("admin")
 		   .email("admin@helpdesk.com")
-		   .senha(passwordEncoder.encode("123456"))
+		   .senha(encoder.encode("123456"))
 		   .role(RoleEnum.ROLE_ADMIN.name())
 		   .build());
   }

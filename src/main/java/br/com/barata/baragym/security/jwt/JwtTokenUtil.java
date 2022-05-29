@@ -1,6 +1,7 @@
 package br.com.barata.baragym.security.jwt;
 
 import br.com.barata.baragym.model.Usuario;
+import br.com.barata.baragym.security.enums.RoleEnum;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -46,6 +47,26 @@ public class JwtTokenUtil implements Serializable {
    username = null;
   }
   return username;
+ }
+
+ public boolean usuarioEhAdmin() {
+  return hasAnyAuthority(RoleEnum.ROLE_ADMIN);
+ }
+
+ protected boolean hasAnyAuthority(RoleEnum... authorities) {
+
+  for (RoleEnum appAuthority : authorities) {
+   if (hasAuthority(appAuthority.name())) {
+	return true;
+   }
+  }
+
+  return false;
+ }
+
+ protected boolean hasAuthority(String authorityName) {
+  return getAuthentication().getAuthorities().stream()
+		  .anyMatch(authority -> authority.getAuthority().equals(authorityName));
  }
 
  public String obtemMatriculaUsuarioLogado() {

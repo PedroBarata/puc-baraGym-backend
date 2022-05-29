@@ -11,6 +11,11 @@ public class CheckAccessService {
  private JwtTokenUtil jwtTokenUtil;
 
  public boolean validaMatricula(String matricula) {
+
+  if (jwtTokenUtil.usuarioEhAdmin()) {
+   return true;
+  }
+
   String matriculaLogada = jwtTokenUtil.obtemMatriculaUsuarioLogado();
 
   return matricula.equals(matriculaLogada);

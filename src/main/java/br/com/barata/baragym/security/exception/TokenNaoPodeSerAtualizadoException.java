@@ -1,4 +1,4 @@
-package br.com.barata.baragym.exception;
+package br.com.barata.baragym.security.exception;
 
 public class TokenNaoPodeSerAtualizadoException extends RuntimeException {
 }

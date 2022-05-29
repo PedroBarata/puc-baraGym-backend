@@ -1,22 +1,11 @@
 package br.com.barata.baragym.controller.request;
 
 import javax.validation.constraints.Email;
-import java.io.Serializable;
 
-public class JwtAuthenticationRequest {
+public class AuthRequest {
  @Email
  private String email;
  private String password;
-
- public JwtAuthenticationRequest() {
-  super();
- }
-
- public JwtAuthenticationRequest(String email, String password) {
-  super();
-  this.email = email;
-  this.password = password;
- }
 
  public String getEmail() {
   return email;

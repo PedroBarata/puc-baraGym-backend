@@ -1,7 +1,7 @@
 package br.com.barata.baragym.controller;
 
-import br.com.barata.baragym.controller.request.JwtAuthenticationRequest;
-import br.com.barata.baragym.exception.TokenNaoPodeSerAtualizadoException;
+import br.com.barata.baragym.controller.request.AuthRequest;
+import br.com.barata.baragym.security.exception.TokenNaoPodeSerAtualizadoException;
 import br.com.barata.baragym.model.Usuario;
 import br.com.barata.baragym.security.annotation.CheckSecurity;
 import br.com.barata.baragym.security.jwt.JwtTokenUtil;
@@ -28,13 +28,10 @@ public class AuthController {
  private JwtTokenUtil jwtTokenUtil;
 
  @Autowired
- private UsuarioService userDetailsService;
-
- @Autowired
  private UsuarioService usuarioService;
 
  @PostMapping(value = "/login")
- public TokenResponse geraToken(@RequestBody JwtAuthenticationRequest authenticationRequest) throws AuthenticationException {
+ public TokenResponse geraToken(@RequestBody AuthRequest authenticationRequest) throws AuthenticationException {
 
   Authentication authentication = authenticationManager.authenticate(
 		  new UsernamePasswordAuthenticationToken(
@@ -44,7 +41,7 @@ public class AuthController {
   );
 
   SecurityContextHolder.getContext().setAuthentication(authentication);
-  Usuario usuario = userDetailsService.buscarPorEmail(authenticationRequest.getEmail());
+  Usuario usuario = usuarioService.buscarPorEmail(authenticationRequest.getEmail());
   String token = jwtTokenUtil.geraToken(usuario);
 
   return new TokenResponse(token);

@@ -296,5 +296,4 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UsuarioResponse'
-        pageable:
           $ref: '#/components/schemas/PageableResponse'

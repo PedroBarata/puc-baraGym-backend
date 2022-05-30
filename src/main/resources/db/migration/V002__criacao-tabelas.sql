@@ -68,3 +68,21 @@ CREATE TABLE ${ph_dbname}.dia_semana (
 
 comment on column dia_semana.id is 'id do dia da semana';
 comment on column dia_semana.nome_dia is 'nome do dia da semana';
+
+/* Atividade */
+
+CREATE TABLE ${ph_dbname}.atividade (
+  id SERIAL UNIQUE,
+  nome VARCHAR ( 140 ) NOT NULL,
+  descricao VARCHAR ( 255 ),
+  valor_dia DECIMAL(12,2) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+comment on column atividade.id is 'id da atividade';
+comment on column atividade.nome is 'nome da atividade';
+comment on column atividade.descricao is 'descricao da atividade';
+comment on column atividade.valor_dia is 'valor do dia da atividade';
+comment on column atividade.created_at is 'data de criação da tupla';
+comment on column atividade.updated_at is 'data de atualização da tupla';

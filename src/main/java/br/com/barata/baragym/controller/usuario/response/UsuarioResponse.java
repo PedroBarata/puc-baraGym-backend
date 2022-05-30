@@ -1,4 +1,4 @@
-package br.com.barata.baragym.controller.response;
+package br.com.barata.baragym.controller.usuario.response;
 
 import lombok.Builder;
 import lombok.Getter;

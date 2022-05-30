@@ -1,6 +1,6 @@
-package br.com.barata.baragym.controller.response.converter;
+package br.com.barata.baragym.controller.usuario.response.converter;
 
-import br.com.barata.baragym.controller.response.UsuarioResponse;
+import br.com.barata.baragym.controller.usuario.response.UsuarioResponse;
 import br.com.barata.baragym.infrastructure.stereotype.Converter;
 import br.com.barata.baragym.model.Usuario;
 import org.springframework.data.domain.Page;

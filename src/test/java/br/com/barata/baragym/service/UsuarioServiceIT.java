@@ -1,6 +1,6 @@
 package br.com.barata.baragym.service;
 
-import br.com.barata.baragym.controller.request.UsuarioRequest;
+import br.com.barata.baragym.controller.usuario.request.UsuarioRequest;
 import br.com.barata.baragym.exception.EmailJaCadastradoException;
 import br.com.barata.baragym.exception.UsuarioNaoEncontradoException;
 import br.com.barata.baragym.model.Usuario;

@@ -1,15 +1,11 @@
-package br.com.barata.baragym.controller;
+package br.com.barata.baragym.controller.usuario;
 
 import br.com.barata.baragym.model.Usuario;
 import br.com.barata.baragym.security.jwt.JwtTokenUtil;
 import br.com.barata.infrastructure.Constants;
 import br.com.barata.infrastructure.stereotype.IntegrationTest;
 import io.restassured.http.ContentType;
-import io.restassured.module.mockmvc.response.MockMvcResponse;
-import io.restassured.response.ExtractableResponse;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +14,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.context.WebApplicationContext;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @IntegrationTest
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -27,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 		"/db/testdata/usuarios/deleta_todos_usuarios.sql",
 		"/db/testdata/usuarios/insere_usuarios.sql"
 })
-class UsuarioControllerIT {
+class UsuarioListarControllerIT {
 
  @Autowired
  WebApplicationContext wac;
@@ -35,18 +30,18 @@ class UsuarioControllerIT {
  @Autowired
  JwtTokenUtil jwtTokenUtil;
 
- @ParameterizedTest
- @ValueSource(strings = {"1", "2"})
- void obtemUsuarioPorMatricula_comoAdmin_deveRetornarUsuarioEStatus200(String matricula) {
+ @Test
+ void listarTodosUsuarios_comoAdmin_deveRetornarUsuariosEStatus200() {
   Usuario usuario = Usuario
 		  .builder()
 		  .email("admin@teste.com")
 		  .senha("123456")
 		  .build();
 
+
   String jwt = jwtTokenUtil.geraToken(usuario);
 
-  ExtractableResponse<MockMvcResponse> response = given()
+  given()
 		  .webAppContextSetup(wac)
 		  .headers(
 				  Constants.HEADER_AUTH,
@@ -58,29 +53,24 @@ class UsuarioControllerIT {
 				  Constants.HEADER_ACCEPT,
 				  ContentType.JSON)
 		  .when()
-		  .get("/usuarios/" + matricula)
+		  .get("/usuarios")
 		  .then()
-		  .status(HttpStatus.OK)
-		  .extract();
+		  .status(HttpStatus.OK);
 
-  Usuario accountResponse = response.as(Usuario.class);
-
-  assertThat(accountResponse).hasNoNullFieldsOrPropertiesExcept("senha");
-  assertThat(accountResponse.getMatricula()).isEqualTo(matricula);
  }
 
  @Test
- void obtemUsuarioPorMatricula_comoUsuarioDaConta_deveRetornarUsuarioEStatus200() {
+ void listarTodosUsuarios_comoAdminEParametros_deveRetornarUsuariosEStatus200() {
   Usuario usuario = Usuario
 		  .builder()
-		  .email("usuario2@teste.com")
+		  .email("admin@teste.com")
 		  .senha("123456")
 		  .build();
 
 
   String jwt = jwtTokenUtil.geraToken(usuario);
 
-  ExtractableResponse<MockMvcResponse> response = given()
+  given()
 		  .webAppContextSetup(wac)
 		  .headers(
 				  Constants.HEADER_AUTH,
@@ -91,20 +81,17 @@ class UsuarioControllerIT {
 
 				  Constants.HEADER_ACCEPT,
 				  ContentType.JSON)
+		  .queryParam("page", 0)
+		  .queryParam("size", 1)
 		  .when()
-		  .get("/usuarios/2")
+		  .get("/usuarios")
 		  .then()
-		  .status(HttpStatus.OK)
-		  .extract();
-
-  Usuario accountResponse = response.as(Usuario.class);
-
-  assertThat(accountResponse.getEmail()).isNotBlank();
+		  .status(HttpStatus.OK);
 
  }
 
  @Test
- void obtemUsuarioPorMatricula_comoOutroUsuarioDaConta_deveRetornarStatus403() {
+ void listarTodosUsuarios_comoUsuario_deveRetornarStatus403() {
   Usuario usuario = Usuario
 		  .builder()
 		  .email("usuario2@teste.com")
@@ -126,13 +113,13 @@ class UsuarioControllerIT {
 				  Constants.HEADER_ACCEPT,
 				  ContentType.JSON)
 		  .when()
-		  .get("/usuarios/3")
+		  .get("/usuarios")
 		  .then()
 		  .status(HttpStatus.FORBIDDEN);
  }
 
  @Test
- void obtemUsuarioPorMatricula_semTokenDeAcesso_deveRetornarStatus403() {
+ void listarTodosUsuarios_semTokenDeAcesso_deveRetornarStatus403() {
   given()
 		  .webAppContextSetup(wac)
 		  .headers(
@@ -142,9 +129,10 @@ class UsuarioControllerIT {
 				  Constants.HEADER_ACCEPT,
 				  ContentType.JSON)
 		  .when()
-		  .get("/usuarios/3")
+		  .get("/usuarios")
 		  .then()
 		  .status(HttpStatus.FORBIDDEN)
 		  .extract();
  }
+
 }

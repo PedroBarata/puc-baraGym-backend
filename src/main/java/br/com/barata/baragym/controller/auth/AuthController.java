@@ -1,11 +1,11 @@
-package br.com.barata.baragym.controller;
+package br.com.barata.baragym.controller.auth;
 
-import br.com.barata.baragym.controller.request.AuthRequest;
-import br.com.barata.baragym.security.exception.TokenNaoPodeSerAtualizadoException;
+import br.com.barata.baragym.controller.auth.request.AuthRequest;
+import br.com.barata.baragym.controller.auth.response.TokenResponse;
 import br.com.barata.baragym.model.Usuario;
 import br.com.barata.baragym.security.annotation.CheckSecurity;
+import br.com.barata.baragym.security.exception.TokenNaoPodeSerAtualizadoException;
 import br.com.barata.baragym.security.jwt.JwtTokenUtil;
-import br.com.barata.baragym.controller.response.TokenResponse;
 import br.com.barata.baragym.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;

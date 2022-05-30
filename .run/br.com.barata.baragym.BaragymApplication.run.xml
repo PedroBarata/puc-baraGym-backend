@@ -1,0 +1,25 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="br.com.barata.baragym.BaragymApplication" type="Application"
+                   factoryName="Application" nameIsGenerated="true">
+        <envs>
+            <env name="JWT_SECRET" value="AE5D877A4962B506F76ECA748F7BA5FE775CD7533B8580F3773521ACF38ED83E"/>
+            <env name="SECRET_DB-PASSWORD" value="123456"/>
+            <env name="SECRET_DB-USER" value="postgres"/>
+            <env name="SPRING_PROFILES_ACTIVE" value="local"/>
+            <env name="VAR_DB-DATABASE" value="postgres"/>
+            <env name="VAR_DB-SCHEMA" value="baragym"/>
+            <env name="VAR_DB-URL" value="localhost:5432"/>
+        </envs>
+        <option name="MAIN_CLASS_NAME" value="br.com.barata.baragym.BaragymApplication"/>
+        <module name="puc-baraGym-backend"/>
+        <extension name="coverage">
+            <pattern>
+                <option name="PATTERN" value="br.com.barata.baragym.*"/>
+                <option name="ENABLED" value="true"/>
+            </pattern>
+        </extension>
+        <method v="2">
+            <option name="Make" enabled="true"/>
+        </method>
+    </configuration>
+</component>

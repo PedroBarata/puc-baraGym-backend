@@ -16,7 +16,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /* Habilita a configuração do security no projeto */
@@ -40,7 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
  }
 
  @Bean
- public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
+ public JwtAuthenticationTokenFilter authenticationTokenFilterBean() {
   return new JwtAuthenticationTokenFilter();
  }
 
@@ -58,7 +57,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		  .antMatchers(HttpMethod.GET, "/actuator/health/liveness").hasAnyAuthority(GROUP_ACTUATOR_HEALTH)
 		  .antMatchers(HttpMethod.GET, "/actuator/health/readiness").hasAnyAuthority(GROUP_ACTUATOR_HEALTH)
 		  .antMatchers(HttpMethod.GET, "/actuator/**").hasAnyAuthority(GROUP_ACTUATOR_HEALTH)
-		  .antMatchers("/login/**").permitAll()
+
+		  .antMatchers("/login/**").permitAll() //login
+		  .antMatchers(HttpMethod.POST, "/usuarios/**").permitAll() //criar conta
 		  .antMatchers(HttpMethod.GET, "/public/**").permitAll() //Swagger
 
 		  .anyRequest().authenticated()

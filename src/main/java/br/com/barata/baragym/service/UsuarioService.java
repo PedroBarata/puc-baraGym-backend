@@ -1,7 +1,7 @@
 package br.com.barata.baragym.service;
 
 import br.com.barata.baragym.commons.utils.StringUtils;
-import br.com.barata.baragym.controller.request.UsuarioRequest;
+import br.com.barata.baragym.controller.usuario.request.UsuarioRequest;
 import br.com.barata.baragym.entity.UsuarioEntity;
 import br.com.barata.baragym.entity.converter.UsuarioConverter;
 import br.com.barata.baragym.exception.EmailJaCadastradoException;

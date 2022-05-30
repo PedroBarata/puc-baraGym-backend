@@ -1,4 +1,4 @@
-package br.com.barata.baragym.controller.request;
+package br.com.barata.baragym.controller.usuario.request;
 
 
 import lombok.Builder;

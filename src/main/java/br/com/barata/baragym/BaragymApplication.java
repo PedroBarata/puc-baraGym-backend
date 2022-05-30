@@ -32,12 +32,13 @@ public class BaragymApplication {
 
  private void initUsers(UsuarioRepository userRepository) {
 
-  Optional<UsuarioEntity> optionalUsuarioEntity = userRepository.findByEmail("admin@helpdesk.com");
+  Optional<UsuarioEntity> optionalUsuarioEntity = userRepository.findByEmail("admin@teste.com");
+
   if (optionalUsuarioEntity.isEmpty()) {
    userRepository.save(UsuarioEntity
 		   .builder()
 		   .nome("admin")
-		   .email("admin@helpdesk.com")
+		   .email("admin@teste.com")
 		   .senha(bCryptPasswordEncoder().encode("123456"))
 		   .role(RoleEnum.ROLE_ADMIN.name())
 		   .build());

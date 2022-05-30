@@ -13,6 +13,10 @@ tags:
     description: Verificação de status e métricas da aplicação.
   - name: usuario
     description: Serviços de criação e pesquisa de usuário.
+  - name: turma
+    description: |
+      Serviços de criação e pesquisa de turma. <br/>
+      **Apenas usuários com perfil `ADMIN`.**
 paths:
   /actuator/health:
     get:
@@ -156,6 +160,76 @@ paths:
           description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
         '500':
           description: Erro interno
+  /turmas:
+    post:
+      tags:
+        - turma
+      summary: Cria uma turma
+      description: Cria uma turma a partir do nome e capacidade.
+      security:
+        - bearerAuthToken: [ ]
+      requestBody:
+        description: Corpo da requisição de criação de turma
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTurmaRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TurmaResponse'
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
+    get:
+      tags:
+        - turma
+      summary: Obtém todas as turmas
+      security:
+        - bearerAuthToken: [ ]
+      parameters:
+        - name: page
+          in: query
+          description: |
+            Número de página solicitado. <br/>
+            **Atenção: os números de página inciam em `0`.**
+          required: false
+          schema:
+            type: integer
+            example: 0
+            default: 0
+        - name: size
+          in: query
+          description: Tamanho máximo da página de dados retornada.
+          required: false
+          schema:
+            type: integer
+            example: 20
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TurmaPageResponse'
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
+
 components:
   securitySchemes:
     bearerAuthToken:
@@ -314,7 +388,77 @@ components:
           example: 0
           description: Número de da página.
         sort:
-         $ref: '#/components/schemas/SortResponse'
+          $ref: '#/components/schemas/SortResponse'
+        first:
+          type: boolean
+          example: true
+          description: Verifica se é a primeira página.
+        numberOfElements:
+          type: number
+          example: 5
+          description: Número de elementos totais.
+        empty:
+          type: boolean
+          example: false
+          description: Verifica se a lista está vazia ou não.
+
+    CreateTurmaRequest:
+      type: object
+      properties:
+        nome:
+          type: string
+          description: Nome da turma
+          example: 'Sala 1'
+        capacidade:
+          type: number
+          description: Capacidade da turma (pessoas)
+          example: 10
+    TurmaResponse:
+      type: object
+      properties:
+        id:
+          type: number
+          description: identificador único da turma
+          example: 12
+        nome:
+          type: string
+          description: Nome da turma
+          example: 'Sala 1'
+        capacidade:
+          type: number
+          description: Capacidade da turma (pessoas)
+          example: 10
+    TurmaPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/TurmaResponse'
+        pageable:
+          type: object
+        last:
+          type: boolean
+          example: false
+          description: Verifica se é a última página.
+        totalElements:
+          type: number
+          example: 5
+          description: Número de elementos totais.
+        totalPages:
+          type: number
+          example: 5
+          description: Número de páginas totais.
+        size:
+          type: number
+          example: 1
+          description: Número de elementos por página.
+        number:
+          type: number
+          example: 0
+          description: Número de da página.
+        sort:
+          $ref: '#/components/schemas/SortResponse'
         first:
           type: boolean
           example: true

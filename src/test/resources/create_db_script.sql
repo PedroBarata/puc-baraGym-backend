@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS usuario;
 
 CREATE TABLE usuario (
-  id serial PRIMARY KEY,
+  id SERIAL UNIQUE,
   nome VARCHAR ( 140 ) NOT NULL,
   matricula VARCHAR ( 36 ) UNIQUE NOT NULL,
   email VARCHAR ( 140 ) UNIQUE NOT NULL,

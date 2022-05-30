@@ -4,6 +4,7 @@ import br.com.barata.baragym.commons.utils.StringUtils;
 import br.com.barata.baragym.controller.request.UsuarioRequest;
 import br.com.barata.baragym.entity.UsuarioEntity;
 import br.com.barata.baragym.entity.converter.UsuarioConverter;
+import br.com.barata.baragym.exception.EmailJaCadastradoException;
 import br.com.barata.baragym.exception.UsuarioNaoEncontradoException;
 import br.com.barata.baragym.model.Usuario;
 import br.com.barata.baragym.repository.UsuarioRepository;
@@ -43,6 +44,12 @@ public class UsuarioService {
 		  .email(request.getEmail())
 		  .senha(stringUtils.encodePassword(request.getSenha()))
 		  .build();
+
+
+  repository.findByEmail(entity.getEmail())
+		  .ifPresent(usuario -> {
+		   throw new EmailJaCadastradoException();
+		  });
 
   UsuarioEntity persistedEntity = repository.save(entity);
 

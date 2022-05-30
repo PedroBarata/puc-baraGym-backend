@@ -1,29 +1,52 @@
 package br.com.barata.baragym.repository;
 
 import br.com.barata.baragym.entity.UsuarioEntity;
+import br.com.barata.infrastructure.stereotype.IntegrationTest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+@IntegrationTest
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Sql({
+        "/db/testdata/usuarios/deleta_todos_usuarios.sql",
+        "/db/testdata/usuarios/insere_admin.sql"
+})
 class UsuarioRepositoryIT {
 
  @Autowired
  private UsuarioRepository repository;
 
  @Test
- @Sql({"/delete_usuarios.sql", "/insert_usuarios.sql"})
- void testFindAllReturnsName() {
-  List<UsuarioEntity> persons = repository.findAll();
-  Assertions.assertThat(persons.size()).isOne();
+ void obterPorEmail_quandoExistir_deveRetonarRegistro() {
+  //cenario
+  String email = "admin@teste.com";
+  //acao
+  Optional<UsuarioEntity> usuario = repository.findByEmail(email);
+
+  //validacao
+  Assertions.assertThat(usuario).isNotEmpty();
+  Assertions.assertThat(usuario).get().hasNoNullFieldsOrProperties();
+  Assertions.assertThat(usuario.get().getEmail()).isEqualTo(email);
  }
+
+ @Test
+ void obterPorMatricula_quandoExistir_deveRetonarRegistro() {
+  //cenario
+  String matricula = "1";
+  //acao
+  Optional<UsuarioEntity> usuario = repository.findByMatricula(matricula);
+
+  //validacao
+  Assertions.assertThat(usuario).isNotEmpty();
+  Assertions.assertThat(usuario).get().hasNoNullFieldsOrProperties();
+  Assertions.assertThat(usuario.get().getMatricula()).isEqualTo(matricula);
+ }
+
 }

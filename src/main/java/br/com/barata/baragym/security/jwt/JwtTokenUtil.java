@@ -56,11 +56,15 @@ public class JwtTokenUtil implements Serializable {
   return hasAnyAuthority(RoleEnum.ROLE_ADMIN);
  }
 
+ public boolean usuarioEhAutenticado() {
+  return getAuthentication().isAuthenticated();
+ }
+
  protected boolean hasAnyAuthority(RoleEnum... authorities) {
 
   for (RoleEnum appAuthority : authorities) {
    if (hasAuthority(appAuthority.name())) {
-	return true;
+    return true;
    }
   }
 

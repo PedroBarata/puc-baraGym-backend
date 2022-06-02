@@ -13,7 +13,14 @@ public @interface CheckSecurity {
  @PreAuthorize("@checkAccessService.validaMatricula(#matricula)")
  @Retention(RUNTIME)
  @Target(METHOD)
- public @interface ValidaMatricula {
+ @interface ValidaMatricula {
+
+ }
+
+ @PreAuthorize("@checkAccessService.validaLogin()")
+ @Retention(RUNTIME)
+ @Target(METHOD)
+ @interface ValidaSeEstaLogado {
 
  }
 

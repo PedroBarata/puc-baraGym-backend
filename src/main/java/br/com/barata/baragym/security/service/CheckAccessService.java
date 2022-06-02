@@ -20,4 +20,12 @@ public class CheckAccessService {
 
   return matricula.equals(matriculaLogada);
  }
+
+ public boolean validaLogin() {
+  if (jwtTokenUtil.usuarioEhAdmin()) {
+   return true;
+  }
+
+  return jwtTokenUtil.usuarioEhAutenticado();
+ }
 }

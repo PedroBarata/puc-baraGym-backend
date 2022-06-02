@@ -90,3 +90,31 @@ comment on column alocacao.hora_inicio is 'horário de inicio da alocacao';
 comment on column alocacao.hora_fim is 'horário de término da alocacao';
 comment on column alocacao.created_at is 'data de criação da tupla';
 comment on column alocacao.updated_at is 'data de atualização da tupla';
+
+/* Usuario_Atividade */
+
+CREATE TABLE ${ph_dbname}.usuario_atividade (
+  id SERIAL UNIQUE,
+  usuario_id int NOT NULL,
+  atividade_id int NOT NULL,
+  quantidade_semana int NOT NULL,
+  valor_total DECIMAL(12,2) NOT NULL,
+  vigencia_inicio TIMESTAMP NOT NULL,
+  vigencia_fim TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (usuario_id) REFERENCES usuario (id),
+  FOREIGN KEY (atividade_id) REFERENCES atividade (id)
+);
+
+comment on column usuario_atividade.id is 'id da relação usuario_atividade';
+comment on column usuario_atividade.atividade_id is 'id da atividade';
+comment on column usuario_atividade.usuario_id is 'id do usuario';
+
+comment on column usuario_atividade.quantidade_semana is 'quantidade de vezes na semana';
+comment on column usuario_atividade.valor_total is 'valor total da atividade do usuário, baseado no valor da atividade x quantidade de vezes na semana';
+comment on column usuario_atividade.vigencia_inicio is 'data de inicio da vigência';
+comment on column usuario_atividade.vigencia_fim is 'data de fim da vigência';
+comment on column usuario_atividade.created_at is 'data de criação da tupla';
+comment on column usuario_atividade.updated_at is 'data de atualização da tupla';

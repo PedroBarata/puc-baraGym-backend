@@ -6,7 +6,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalTime;
 import java.time.OffsetDateTime;
 
 @Getter
@@ -40,10 +39,10 @@ public class AlocacaoEntity {
  private AtividadeEntity atividade;
 
  @Column(name = "hora_inicio")
- private LocalTime horaInicio;
+ private String horaInicio;
 
  @Column(name = "hora_fim")
- private LocalTime horaFim;
+ private String horaFim;
 
  @CreationTimestamp
  @Column(name = "created_at")

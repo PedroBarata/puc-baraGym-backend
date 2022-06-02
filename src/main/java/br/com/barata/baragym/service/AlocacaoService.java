@@ -8,6 +8,7 @@ import br.com.barata.baragym.entity.TurmaEntity;
 import br.com.barata.baragym.entity.converter.AlocacaoConverter;
 import br.com.barata.baragym.exception.AtividadeNaoEncontradaException;
 import br.com.barata.baragym.exception.DiaSemanaNaoEncontradoException;
+import br.com.barata.baragym.exception.PeriodoDeTempoInvalidoException;
 import br.com.barata.baragym.exception.TurmaNaoEncontradaException;
 import br.com.barata.baragym.model.Alocacao;
 import br.com.barata.baragym.repository.AlocacaoRepository;
@@ -40,6 +41,11 @@ public class AlocacaoService {
  private AlocacaoConverter converter;
 
  public Alocacao criarAlocacao(AlocacaoRequest request) {
+
+  if (!request.periodoEhValido()) {
+   throw new PeriodoDeTempoInvalidoException();
+  }
+
   Optional<TurmaEntity> optTurmaEntity = turmaRepository.findById(request.getTurmaId());
   Optional<AtividadeEntity> optAtividadeEntity = atividadeRepository.findById(request.getAtividadeId());
   Optional<DiaSemanaEntity> optDiaSemanaEntity = diaSemanaRepository.findById(request.getDiaSemanaId());
@@ -52,7 +58,6 @@ public class AlocacaoService {
           .horaInicio(request.getHoraInicio())
           .horaFim(request.getHoraFim())
           .build();
-
   AlocacaoEntity persistedEntity = alocacaoRepository.save(entity);
 
   return converter.convertToModel(persistedEntity);

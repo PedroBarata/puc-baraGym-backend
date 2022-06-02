@@ -35,33 +35,6 @@ comment on column turma.capacidade is 'capacidade da turma, maior ou igual a zer
 comment on column turma.created_at is 'data de criação da tupla';
 comment on column turma.updated_at is 'data de atualização da tupla';
 
-/* Alocação */
-
-CREATE TABLE ${ph_dbname}.alocacao (
-  id SERIAL UNIQUE,
-  turma_id int NOT NULL,
-  dia_semana_id int NOT NULL,
-  atividade_id int NOT NULL,
-  hora_inicio TIME NOT NULL,
-  hora_fim TIME NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-  FOREIGN KEY (turma_id) REFERENCES turma (id),
-  FOREIGN KEY (dia_semana_id) REFERENCES dia_semana (id),
-  FOREIGN KEY (atividade_id) REFERENCES atividade (id)
-);
-
-comment on column alocacao.id is 'id da alocacao';
-comment on column alocacao.turma_id is 'id da turma';
-comment on column alocacao.dia_semana_id is 'id do dia da semana';
-comment on column alocacao.atividade_id is 'id da atividade';
-
-comment on column alocacao.hora_inicio is 'horário de inicio da alocacao';
-comment on column alocacao.hora_fim is 'horário de término da alocacao';
-comment on column alocacao.created_at is 'data de criação da tupla';
-comment on column alocacao.updated_at is 'data de atualização da tupla';
-
 /* DiaSemana */
 
 CREATE TABLE ${ph_dbname}.dia_semana (
@@ -89,3 +62,31 @@ comment on column atividade.descricao is 'descricao da atividade';
 comment on column atividade.valor_dia is 'valor do dia da atividade';
 comment on column atividade.created_at is 'data de criação da tupla';
 comment on column atividade.updated_at is 'data de atualização da tupla';
+
+
+/* Alocação */
+
+CREATE TABLE ${ph_dbname}.alocacao (
+  id SERIAL UNIQUE,
+  turma_id int NOT NULL,
+  dia_semana_id int NOT NULL,
+  atividade_id int NOT NULL,
+  hora_inicio VARCHAR (5) NOT NULL,
+  hora_fim VARCHAR (5) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (turma_id) REFERENCES turma (id),
+  FOREIGN KEY (dia_semana_id) REFERENCES dia_semana (id),
+  FOREIGN KEY (atividade_id) REFERENCES atividade (id)
+);
+
+comment on column alocacao.id is 'id da alocacao';
+comment on column alocacao.turma_id is 'id da turma';
+comment on column alocacao.dia_semana_id is 'id do dia da semana';
+comment on column alocacao.atividade_id is 'id da atividade';
+
+comment on column alocacao.hora_inicio is 'horário de inicio da alocacao';
+comment on column alocacao.hora_fim is 'horário de término da alocacao';
+comment on column alocacao.created_at is 'data de criação da tupla';
+comment on column alocacao.updated_at is 'data de atualização da tupla';

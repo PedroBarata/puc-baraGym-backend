@@ -776,11 +776,11 @@ components:
         horaInicio:
           type: string
           description: Horário de início da alocacao
-          example: '15:00:00'
+          example: '15:00'
         horaFim:
           type: string
           description: Horário de término da alocacao
-          example: '17:00:00'
+          example: '17:00'
     AlocacaoPageResponse:
       type: object
       properties:

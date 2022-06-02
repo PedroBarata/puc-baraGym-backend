@@ -166,6 +166,43 @@ paths:
           description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
         '500':
           description: Erro interno
+  /usuarios/{matricula}/atividades:
+    post:
+      tags:
+        - usuario
+      summary: Cadastra um determinado aluno em atividades
+      description: |
+        Apenas o próprio usuário tem acesso ou um administrador (`ADMIN`).
+      security:
+        - bearerAuthToken: []
+      parameters:
+        - name: matricula
+          in: path
+          description: Matrícula do usuário
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Corpo da requisição de cadastro de um aluno em atividades
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUsuarioAtividadeRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioAtividadeResponse'
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
   /turmas:
     post:
       tags:
@@ -594,6 +631,47 @@ components:
           type: boolean
           example: false
           description: Verifica se a lista está vazia ou não.
+
+    CreateAtividadePorUsuarioRequest:
+      type: object
+      properties:
+        atividadeId:
+          type: number
+          description: Identificador único da atividade
+          example: 1
+        quantidadeSemana:
+          type: number
+          description: Quantidade de vezes na semana (valor entre 1 e 6)
+          example: 5
+    CreateUsuarioAtividadeRequest:
+      type: object
+      properties:
+        atividades:
+          type: array
+          description: Atividades a serem cadastradas
+          items:
+            $ref: '#/components/schemas/CreateAtividadePorUsuarioRequest'
+        valorTotal:
+          type: number
+          description: Valor total de todas as atividades a serem cadastradas
+          example: 345.44
+    UsuarioAtividadeResponse:
+      type: object
+      properties:
+        nomeAtividades:
+          type: array
+          items: 
+            type: string
+            description: Nome da atividade
+            example: 'Boxe'
+        vigenciaInicio:
+          type: string
+          description: Data de início da vigência do plano (em UTC)
+          example: '2022-06-02T16:00:54.102+00:00'
+        vigenciaFim:
+          type: string
+          description: Data de término da vigência do plano (em UTC), D+30 da data `vigenciaInicio`
+          example: '2022-07-02T16:00:54.102+00:00'
 
     CreateTurmaRequest:
       type: object

@@ -170,7 +170,7 @@ paths:
     post:
       tags:
         - usuario
-      summary: Cadastra um determinado aluno em atividades
+      summary: Cadastra um determinado usuário em atividades
       description: |
         Apenas o próprio usuário tem acesso ou um administrador (`ADMIN`).
       security:
@@ -183,7 +183,7 @@ paths:
           schema:
             type: string
       requestBody:
-        description: Corpo da requisição de cadastro de um aluno em atividades
+        description: Corpo da requisição de cadastro de um usuário em atividades
         content:
           application/json:
             schema:

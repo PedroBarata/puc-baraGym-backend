@@ -43,7 +43,7 @@ public class AlocacaoService {
  private AlocacaoConverter converter;
 
  @Transactional(propagation = Propagation.REQUIRES_NEW)
- public Alocacao criarAlocacao(AlocacaoRequest request) {
+ public void criarAlocacao(AlocacaoRequest request) {
 
   if (!request.periodoEhValido()) {
    throw new PeriodoDeTempoInvalidoException();
@@ -61,9 +61,8 @@ public class AlocacaoService {
           .horaInicio(request.getHoraInicio())
           .horaFim(request.getHoraFim())
           .build();
-  AlocacaoEntity persistedEntity = alocacaoRepository.save(entity);
 
-  return converter.convertToModel(persistedEntity);
+  alocacaoRepository.save(entity);
  }
 
  @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)

@@ -9,7 +9,7 @@ servers:
 tags:
   - name: autenticacao
     description: Serviços de autenticação de usuário.
-  - name: monitoring
+  - name: monitoracao
     description: Verificação de status e métricas da aplicação.
   - name: usuario
     description: Serviços de criação e pesquisa de usuário.
@@ -23,11 +23,14 @@ tags:
   - name: alocacao
     description: |
       Serviços de criação e pesquisa de alocacao.
+  - name: agendamento
+    description: |
+      Serviços de criação e pesquisa de agendamento.
 paths:
   /actuator/health:
     get:
       tags:
-        - monitoring
+        - monitoracao
       summary: Status da aplicação
       security:
         - bearerAuthToken: []
@@ -44,6 +47,11 @@ paths:
           description: Forbidden (Este endpoint necessita de token de acesso com perfil `ADMIN`)
         '500':
           description: Erro interno
+
+
+  ######################
+  ###### LOGIN #########
+  ######################
   /login:
     post:
       tags:
@@ -64,6 +72,10 @@ paths:
                 $ref: '#/components/schemas/TokenResponse'
         '500':
           description: Erro interno
+
+  ######################
+  ###### USUARIO #######
+  ######################        
   /usuarios:
     post:
       tags:
@@ -71,7 +83,7 @@ paths:
       summary: Cria um usuário
       description: Cria um usuário a partir do nome, email e senha.
       security:
-        - bearerAuthToken: []
+        - bearerAuthToken: [ ]
       requestBody:
         description: Corpo da requisição de criação do usuário
         content:
@@ -166,15 +178,19 @@ paths:
           description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
         '500':
           description: Erro interno
-  /usuarios/{matricula}/atividades:
-    post:
+
+  ######################
+  #### AGENDAMENTO #####
+  ######################
+  /usuarios/{matricula}/agendamentos/{agendamentoId}:
+    delete:
       tags:
-        - usuario
-      summary: Cadastra um determinado usuário em atividades
+        - agendamento
+      summary: Deleta um agendamento
       description: |
         Apenas o próprio usuário tem acesso ou um administrador (`ADMIN`).
       security:
-        - bearerAuthToken: []
+        - bearerAuthToken: [ ]
       parameters:
         - name: matricula
           in: path
@@ -182,19 +198,15 @@ paths:
           required: true
           schema:
             type: string
-      requestBody:
-        description: Corpo da requisição de cadastro de um usuário em atividades
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateUsuarioAtividadeRequest'
+        - name: agendamentoId
+          in: path
+          description: Identificador unico do agendamento
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UsuarioAtividadeResponse'
         '400':
           description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
         '401':
@@ -203,6 +215,95 @@ paths:
           description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
         '500':
           description: Erro interno
+  /usuarios/{matricula}/agendamentos:
+    post:
+      tags:
+        - agendamento
+      summary: Agenda um usuário em uma determinada alocacao
+      description: |
+        Apenas o próprio usuário tem acesso ou um administrador (`ADMIN`).
+      security:
+        - bearerAuthToken: [ ]
+      parameters:
+        - name: matricula
+          in: path
+          description: Matrícula do usuário
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Corpo da requisição de cadastro de um agendamento
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUsuarioAgendamentoRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioAgendamentoResponse'
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
+    get:
+      tags:
+        - agendamento
+      summary: Obtém agendamentos do usuário
+      description: |
+        Apenas o próprio usuário tem acesso ou um administrador (`ADMIN`).
+      security:
+        - bearerAuthToken: [ ]
+      parameters:
+        - name: matricula
+          in: path
+          description: Matrícula do usuário
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: |
+            Número de página solicitado. <br/>
+            **Atenção: os números de página inciam em `0`.**
+          required: false
+          schema:
+            type: integer
+            example: 0
+            default: 0
+        - name: size
+          in: query
+          description: Tamanho máximo da página de dados retornada.
+          required: false
+          schema:
+            type: integer
+            example: 20
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioAgendamentoPageResponse'
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
+
+  ######################
+  ###### TURMA #########
+  ######################
   /turmas:
     post:
       tags:
@@ -272,6 +373,11 @@ paths:
           description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
         '500':
           description: Erro interno
+
+  
+  ######################
+  ##### ATIVIDADE ######
+  ######################
   /atividades:
     post:
       tags:
@@ -341,10 +447,146 @@ paths:
           description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
         '500':
           description: Erro interno
-  /atividades/{atividadeId}/alocacoes:
+  /usuarios/{matricula}/atividades:
+    post:
+      tags:
+        - atividade
+      summary: Cadastra um determinado usuário em atividades
+      description: |
+        Apenas o próprio usuário tem acesso ou um administrador (`ADMIN`).
+      security:
+        - bearerAuthToken: [ ]
+      parameters:
+        - name: matricula
+          in: path
+          description: Matrícula do usuário
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Corpo da requisição de cadastro de um usuário em atividades
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUsuarioAtividadeRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
     get:
       tags:
         - atividade
+      summary: Obtém as atividades cadastradas pelo usuário
+      description: |
+        Apenas o próprio usuário tem acesso ou um administrador (`ADMIN`).
+      security:
+        - bearerAuthToken: [ ]
+      parameters:
+        - name: matricula
+          in: path
+          description: Matrícula do usuário
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UsuarioAtividadeResponse'
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
+
+  ######################
+  ###### ALOCACAO ######
+  ######################
+  /alocacoes:
+    post:
+      tags:
+        - alocacao
+      summary: Cria uma alocacao
+      description: |
+        Cria uma nova alocacao. Baseado na turma, atividade e dia da semana.
+      security:
+        - bearerAuthToken: [ ]
+      requestBody:
+        description: Corpo da requisição de criação de alocacao.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAlocacaoRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
+    get:
+      tags:
+        - alocacao
+      summary: Obtém todas as alocacoes
+      description: Apenas administradores (`ADMIN`).
+      security:
+        - bearerAuthToken: [ ]
+      parameters:
+        - name: page
+          in: query
+          description: |
+            Número de página solicitado. <br/>
+            **Atenção: os números de página inciam em `0`.**
+          required: false
+          schema:
+            type: integer
+            example: 0
+            default: 0
+        - name: size
+          in: query
+          description: Tamanho máximo da página de dados retornada.
+          required: false
+          schema:
+            type: integer
+            example: 20
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlocacaoPageResponse'
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
+  /atividades/{atividadeId}/alocacoes:
+    get:
+      tags:
+        - alocacao
       summary: Obtém as alocações de determinada atividade
       security:
         - bearerAuthToken: [ ]
@@ -388,44 +630,29 @@ paths:
           description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
         '500':
           description: Erro interno
-  
-  /alocacoes:
-    post:
-      tags:
-        - alocacao
-      summary: Cria uma alocacao
-      description: |
-        Cria uma nova alocacao. Baseado na turma, atividade e dia da semana.
-      security:
-        - bearerAuthToken: [ ]
-      requestBody:
-        description: Corpo da requisição de criação de alocacao.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateAlocacaoRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AlocacaoResponse'
-        '400':
-          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
-        '401':
-          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
-        '403':
-          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
-        '500':
-          description: Erro interno
+  /usuarios/{matricula}/atividades/{usuarioAtividadeId}/alocacoes:
     get:
       tags:
-        - atividade
-      summary: Obtém todas as atividades
+        - alocacao
+      summary: |
+        Obtem, a partir das atividades cadastradas do usuário, suas alocacoes e se possui agendamentos
+      description: |
+        Apenas o próprio usuário tem acesso ou um administrador (`ADMIN`).
       security:
         - bearerAuthToken: [ ]
       parameters:
+        - name: matricula
+          in: path
+          description: Matrícula do usuário
+          required: true
+          schema:
+            type: string
+        - name: usuarioAtividadeId
+          in: path
+          description: Identificador único do cadastro do usuário em uma determinada atividade
+          required: true
+          schema:
+            type: string
         - name: page
           in: query
           description: |
@@ -450,7 +677,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AtividadePageResponse'
+                $ref: '#/components/schemas/UsuarioAlocacaoAgendamentoPageResponse'
         '400':
           description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
         '401':
@@ -459,6 +686,7 @@ paths:
           description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
         '500':
           description: Erro interno
+
 
 components:
   securitySchemes:
@@ -558,6 +786,7 @@ components:
           type: boolean
           example: false
           description: Verifica se a lista está vazia ou não.
+
     CreateUsuarioRequest:
       type: object
       properties:
@@ -658,12 +887,22 @@ components:
     UsuarioAtividadeResponse:
       type: object
       properties:
-        nomeAtividades:
-          type: array
-          items: 
-            type: string
-            description: Nome da atividade
-            example: 'Boxe'
+        id:
+          type: number
+          description: Identificador único da atividade do usuário (UsuarioAtividade)
+          example: 3
+        atividadeId:
+          type: number
+          description: Identificador único da atividade
+          example: 1
+        nomeAtividade:
+          type: string
+          description: Nome da atividade
+          example: 'Boxe'
+        quantidadeSemana:
+          type: number
+          description: Quantidade de vezes na semana
+          example: 5
         vigenciaInicio:
           type: string
           description: Data de início da vigência do plano (em UTC)
@@ -672,7 +911,166 @@ components:
           type: string
           description: Data de término da vigência do plano (em UTC), D+30 da data `vigenciaInicio`
           example: '2022-07-02T16:00:54.102+00:00'
-
+    CreateUsuarioAgendamentoRequest:
+      type: object
+      properties:
+        alocacaoId:
+          type: number
+          description: Identificador único da alocacao
+    UsuarioAgendamentoResponse:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Identificador único do agendamento
+          example: 1
+        alocacaoId:
+          type: number
+          description: Identificador único da alocacao
+          example: 3
+        nomeAtividade:
+          type: string
+          description: Nome da atividade da alocacao
+          example: 'Boxe'
+        nomeDiaSemana:
+          type: string
+          description: Dia da semana da alocacao
+          example: 'Terça-feira'
+        nomeTurma:
+          type: string
+          description: Nome da turma/sala da alocacao
+          example: 'Sala 1'
+        horaInicio:
+          type: string
+          description: Horário de início da alocacao
+          example: '10:00'
+        horaFim:
+          type: string
+          description: Horário de término da alocacao
+          example: '15:00'
+    UsuarioAgendamentoPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/UsuarioAgendamentoResponse'
+        pageable:
+          type: object
+        last:
+          type: boolean
+          example: false
+          description: Verifica se é a última página.
+        totalElements:
+          type: number
+          example: 5
+          description: Número de elementos totais.
+        totalPages:
+          type: number
+          example: 5
+          description: Número de páginas totais.
+        size:
+          type: number
+          example: 1
+          description: Número de elementos por página.
+        number:
+          type: number
+          example: 0
+          description: Número de da página.
+        sort:
+          $ref: '#/components/schemas/SortResponse'
+        first:
+          type: boolean
+          example: true
+          description: Verifica se é a primeira página.
+        numberOfElements:
+          type: number
+          example: 5
+          description: Número de elementos totais.
+        empty:
+          type: boolean
+          example: false
+          description: Verifica se a lista está vazia ou não.
+    UsuarioAlocacaoAgendamentoResponse:
+      type: object
+      properties:
+        agendamentoId:
+          type: number
+          description: Identificador único do agendamento
+          example: 1
+        alocacaoId:
+          type: number
+          description: Identificador único da alocacao
+          example: 3
+        nomeAtividade:
+          type: string
+          description: Nome da atividade da alocacao
+          example: 'Boxe'
+        nomeDiaSemana:
+          type: string
+          description: Dia da semana da alocacao
+          example: 'Terça-feira'
+        nomeTurma:
+          type: string
+          description: Nome da turma/sala da alocacao
+          example: 'Sala 1'
+        horaInicio:
+          type: string
+          description: Horário de início da alocacao
+          example: '10:00'
+        horaFim:
+          type: string
+          description: Horário de término da alocacao
+          example: '15:00'
+        estaAgendado:
+          type: boolean
+          description: |
+            Verifica se esta alocacao possui um agendamento prévio, 
+            caso seja verdade, o campo `agendamentoId` também virá preenchido.
+          example: true
+    UsuarioAlocacaoAgendamentoPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/UsuarioAlocacaoAgendamentoResponse'
+        pageable:
+          type: object
+        last:
+          type: boolean
+          example: false
+          description: Verifica se é a última página.
+        totalElements:
+          type: number
+          example: 5
+          description: Número de elementos totais.
+        totalPages:
+          type: number
+          example: 5
+          description: Número de páginas totais.
+        size:
+          type: number
+          example: 1
+          description: Número de elementos por página.
+        number:
+          type: number
+          example: 0
+          description: Número de da página.
+        sort:
+          $ref: '#/components/schemas/SortResponse'
+        first:
+          type: boolean
+          example: true
+          description: Verifica se é a primeira página.
+        numberOfElements:
+          type: number
+          example: 5
+          description: Número de elementos totais.
+        empty:
+          type: boolean
+          example: false
+          description: Verifica se a lista está vazia ou não.
     CreateTurmaRequest:
       type: object
       properties:
@@ -851,6 +1249,18 @@ components:
           type: number
           description: identificador único da alocacao
           example: 12
+        nomeAtividade:
+          type: string
+          description: nome da atividade da alocacao
+          example: 'Spinning'
+        nomeDiaSemana:
+          type: string
+          description: nome do dia da semana da alocacao
+          example: 'Terça-feira'
+        nomeTurma:
+          type: string
+          description: nome da turma/sala da alocacao
+          example: 'Turma 1'
         horaInicio:
           type: string
           description: Horário de início da alocacao

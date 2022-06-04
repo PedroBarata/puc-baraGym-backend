@@ -16,4 +16,10 @@ public interface AlocacaoRepository extends JpaRepository<AlocacaoEntity, Long>,
          "atividade",
          "diaSemana"})
  Page<AlocacaoEntity> findByAtividadeId(Long atividadeId, Pageable pageable);
+
+ @EntityGraph(attributePaths = {
+         "turma",
+         "atividade",
+         "diaSemana"})
+ Page<AlocacaoEntity> findAll(Pageable pageable);
 }

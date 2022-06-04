@@ -1,7 +1,6 @@
 package br.com.barata.baragym.controller.alocacao;
 
 import br.com.barata.baragym.controller.alocacao.request.AlocacaoRequest;
-import br.com.barata.baragym.model.Alocacao;
 import br.com.barata.baragym.service.AlocacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -22,8 +21,8 @@ public class AlocacaoCriarController {
 
  @PostMapping
  @PreAuthorize("hasAnyRole('ADMIN')")
- public Alocacao criaAlocacao(@Valid @RequestBody AlocacaoRequest request) {
-  return alocacaoService.criarAlocacao(request);
+ public void criaAlocacao(@Valid @RequestBody AlocacaoRequest request) {
+  alocacaoService.criarAlocacao(request);
  }
 
 }

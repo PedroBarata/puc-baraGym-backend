@@ -11,18 +11,16 @@ public class AlocacaoConverter {
  public Alocacao convertToModel(AlocacaoEntity entity) {
   return Alocacao
 		  .builder()
+		  .id(entity.getId())
+		  .nomeAtividade(entity.getAtividade().getNome())
+		  .nomeDiaSemana(entity.getDiaSemana().getNomeDia())
+		  .nomeTurma(entity.getTurma().getNome())
 		  .horaInicio(entity.getHoraInicio())
 		  .horaFim(entity.getHoraFim())
-		  .id(entity.getId())
 		  .build();
  }
 
  public Page<Alocacao> convertToModel(Page<AlocacaoEntity> entityPage) {
-  return entityPage.map(entity -> Alocacao
-		  .builder()
-		  .horaInicio(entity.getHoraInicio())
-		  .horaFim(entity.getHoraFim())
-		  .id(entity.getId())
-		  .build());
+  return entityPage.map(this::convertToModel);
  }
 }

@@ -8,6 +8,10 @@ import lombok.Getter;
 public class Alocacao {
 
  private Long id;
+
+ private String nomeAtividade;
+ private String nomeDiaSemana;
+ private String nomeTurma;
  private String horaInicio;
  private String horaFim;
 

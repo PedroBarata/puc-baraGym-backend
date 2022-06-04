@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -40,6 +42,7 @@ public class AlocacaoService {
  @Autowired
  private AlocacaoConverter converter;
 
+ @Transactional(propagation = Propagation.REQUIRES_NEW)
  public Alocacao criarAlocacao(AlocacaoRequest request) {
 
   if (!request.periodoEhValido()) {
@@ -63,6 +66,7 @@ public class AlocacaoService {
   return converter.convertToModel(persistedEntity);
  }
 
+ @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
  public Page<Alocacao> listarTodasAlocacoes(Pageable pageable) {
   Page<AlocacaoEntity> alocacaoEntityPage = alocacaoRepository.findAll(pageable);
   return converter.convertToModel(alocacaoEntityPage);

@@ -1,7 +1,6 @@
 package br.com.barata.baragym.controller.usuario;
 
 import br.com.barata.baragym.controller.usuario.request.UsuarioAtividadeRequest;
-import br.com.barata.baragym.model.UsuarioAtividade;
 import br.com.barata.baragym.security.annotation.CheckSecurity;
 import br.com.barata.baragym.service.UsuarioAtividadeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +15,14 @@ import javax.validation.constraints.NotBlank;
 public class UsuarioAtividadeCriarController {
 
  @Autowired
- private UsuarioAtividadeService usuarioService;
+ private UsuarioAtividadeService usuarioAtividadeService;
 
  @PostMapping
  @CheckSecurity.ValidaMatricula
- public UsuarioAtividade criaUsuarioAtividade(
+ public void criaUsuarioAtividade(
          @PathVariable("matricula") @NotBlank String matricula,
          @Valid @RequestBody UsuarioAtividadeRequest request) {
-  return usuarioService.criarUsuarioAtividade(request, matricula);
+  usuarioAtividadeService.criarUsuarioAtividade(request, matricula);
  }
 
 }

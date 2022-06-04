@@ -118,3 +118,24 @@ comment on column usuario_atividade.vigencia_inicio is 'data de inicio da vigên
 comment on column usuario_atividade.vigencia_fim is 'data de fim da vigência';
 comment on column usuario_atividade.created_at is 'data de criação da tupla';
 comment on column usuario_atividade.updated_at is 'data de atualização da tupla';
+
+/* Agendamento */
+
+CREATE TABLE ${ph_dbname}.agendamento (
+  id SERIAL UNIQUE,
+  usuario_id int NOT NULL,
+  alocacao_id int NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (usuario_id) REFERENCES usuario (id),
+  FOREIGN KEY (alocacao_id) REFERENCES alocacao (id)
+);
+
+comment on column agendamento.id is 'id do agendamento';
+comment on column agendamento.alocacao_id is 'id da alocacao';
+comment on column agendamento.usuario_id is 'id do usuario';
+
+comment on column agendamento.created_at is 'data de criação da tupla';
+comment on column agendamento.updated_at is 'data de atualização da tupla';
+

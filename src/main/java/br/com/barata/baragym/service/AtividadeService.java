@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AtividadeService {
@@ -29,6 +31,7 @@ public class AtividadeService {
  @Autowired
  private AlocacaoConverter alocacaoConverter;
 
+ @Transactional(propagation = Propagation.REQUIRES_NEW)
  public Atividade criarAtividade(AtividadeRequest request) {
   AtividadeEntity entity = AtividadeEntity
           .builder()
@@ -42,11 +45,13 @@ public class AtividadeService {
   return atividadeConverter.convertToModel(persistedEntity);
  }
 
+ @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
  public Page<Atividade> listarTodasAtividades(Pageable pageable) {
   Page<AtividadeEntity> atividadeEntityPage = atividadeRepo.findAll(pageable);
   return atividadeConverter.convertToModel(atividadeEntityPage);
  }
 
+ @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
  public Page<Alocacao> listarAlocacoesPorAtividade(Long atividadeId, Pageable pageable) {
   Page<AlocacaoEntity> alocacaoEntityPage = alocacaoRepo.findByAtividadeId(atividadeId, pageable);
   return alocacaoConverter.convertToModel(alocacaoEntityPage);

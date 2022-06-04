@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -27,16 +29,19 @@ public class UsuarioService {
  @Autowired
  private StringUtils stringUtils;
 
+ @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
  public Usuario buscarPorEmail(String email) {
   Optional<UsuarioEntity> optEntity = repository.findByEmail(email);
   return converter.convertToModel(optEntity.orElseThrow(UsuarioNaoEncontradoException::new));
  }
 
+ @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
  public Usuario buscarPorMatricula(String matricula) {
   Optional<UsuarioEntity> optEntity = repository.findByMatricula(matricula);
   return converter.convertToModel(optEntity.orElseThrow(UsuarioNaoEncontradoException::new));
  }
 
+ @Transactional(propagation = Propagation.REQUIRES_NEW)
  public Usuario criarUsuario(UsuarioRequest request) {
   UsuarioEntity entity = UsuarioEntity
 		  .builder()
@@ -56,6 +61,7 @@ public class UsuarioService {
   return converter.convertToModel(persistedEntity);
  }
 
+ @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
  public Page<Usuario> listarTodosUsuarios(Pageable pageable) {
 
   Page<UsuarioEntity> usuarioEntityPage = repository.findAll(pageable);

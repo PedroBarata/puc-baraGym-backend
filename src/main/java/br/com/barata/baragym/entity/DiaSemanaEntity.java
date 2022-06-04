@@ -22,5 +22,6 @@ public class DiaSemanaEntity {
  @Column(name = "id")
  private Long id;
 
- private String nome_dia;
+ @Column(name = "nome_dia")
+ private String nomeDia;
 }

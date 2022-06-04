@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TurmaService {
@@ -19,6 +21,7 @@ public class TurmaService {
  @Autowired
  private TurmaConverter converter;
 
+ @Transactional(propagation = Propagation.REQUIRES_NEW)
  public Turma criarTurma(TurmaRequest request) {
   TurmaEntity entity = TurmaEntity
 		  .builder()
@@ -31,6 +34,7 @@ public class TurmaService {
   return converter.convertToModel(persistedEntity);
  }
 
+ @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
  public Page<Turma> listarTodasTurmas(Pageable pageable) {
   Page<TurmaEntity> usuarioEntityPage = repository.findAll(pageable);
   return converter.convertToModel(usuarioEntityPage);

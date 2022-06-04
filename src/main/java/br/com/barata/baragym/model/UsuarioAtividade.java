@@ -4,13 +4,16 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Date;
-import java.util.List;
 
 @Builder
 @Getter
 public class UsuarioAtividade {
 
- private List<String> nomeAtividades;
+ private Long id;
+ private Long atividadeId;
+ private String nomeAtividade;
+ private Integer quantidadeSemana;
  private Date vigenciaInicio;
  private Date vigenciaFim;
+
 }

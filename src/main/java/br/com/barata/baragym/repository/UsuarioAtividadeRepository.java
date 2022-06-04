@@ -15,5 +15,8 @@ public interface UsuarioAtividadeRepository extends JpaRepository<UsuarioAtivida
  @EntityGraph(attributePaths = {"atividade"})
  List<UsuarioAtividadeEntity> findByUsuarioMatriculaAndVigenciaFimGreaterThanEqual(String matricula, Date data);
 
+ @EntityGraph(attributePaths = {"atividade"})
  List<UsuarioAtividadeEntity> findAllByUsuarioMatricula(String matricula);
+
+ UsuarioAtividadeEntity findByUsuarioMatriculaAndAtividadeId(String matricula, Long atividadeId);
 }

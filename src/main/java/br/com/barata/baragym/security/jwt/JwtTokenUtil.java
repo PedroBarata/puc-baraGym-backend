@@ -24,6 +24,7 @@ public class JwtTokenUtil implements Serializable {
  static final String CLAIM_KEY_USERNAME = "sub";
  static final String CLAIM_KEY_MATRICULA = "matricula";
  static final String CLAIM_KEY_NOME = "nome";
+ static final String CLAIM_KEY_ROLE = "role";
 
  static final String CLAIM_KEY_CREATED = "created";
  static final String CLAIM_KEY_EXPIRED = "exp";
@@ -119,6 +120,7 @@ public class JwtTokenUtil implements Serializable {
   claims.put(CLAIM_KEY_USERNAME, usuario.getEmail());
   claims.put(CLAIM_KEY_MATRICULA, usuario.getMatricula());
   claims.put(CLAIM_KEY_NOME, usuario.getNome());
+  claims.put(CLAIM_KEY_ROLE, usuario.getRole().name());
 
   final Date createdDate = new Date();
   claims.put(CLAIM_KEY_CREATED, createdDate);

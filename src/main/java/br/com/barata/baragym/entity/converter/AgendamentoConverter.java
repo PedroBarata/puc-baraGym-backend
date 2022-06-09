@@ -16,6 +16,7 @@ public class AgendamentoConverter {
 		  .builder()
 		  .id(entity.getId())
 		  .alocacaoId(alocacaoEntity.getId())
+		  .atividadeId(alocacaoEntity.getAtividade().getId())
 		  .horaFim(alocacaoEntity.getHoraFim())
 		  .nomeTurma(alocacaoEntity.getTurma().getNome())
 		  .nomeAtividade(alocacaoEntity.getAtividade().getNome())

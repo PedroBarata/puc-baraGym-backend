@@ -952,13 +952,49 @@ components:
           type: string
           description: Horário de término da alocacao
           example: '15:00'
+    ListUsuarioAgendamentoResponse:
+      type: object
+      properties:
+        atividadeId:
+          type: number
+          description: Identificador único da atividade
+          example: 1
+        nomeAtividade:
+          type: string
+          description: Nome da atividade
+          example: 'Boxe'
+        agendamentos:
+          type: array
+          items:
+            type: object
+            properties:
+              alocacaoId:
+                type: number
+                description: Identificador único da alocacao
+                example: 3
+              nomeDiaSemana:
+                type: string
+                description: Dia da semana da alocacao
+                example: 'Terça-feira'
+              nomeTurma:
+                type: string
+                description: Nome da turma/sala da alocacao
+                example: 'Sala 1'
+              horaInicio:
+                type: string
+                description: Horário de início da alocacao
+                example: '10:00'
+              horaFim:
+                type: string
+                description: Horário de término da alocacao
+                example: '15:00'
     UsuarioAgendamentoPageResponse:
       type: object
       properties:
         content:
           type: array
           items:
-            $ref: '#/components/schemas/UsuarioAgendamentoResponse'
+            $ref: '#/components/schemas/ListUsuarioAgendamentoResponse'
         pageable:
           type: object
         last:

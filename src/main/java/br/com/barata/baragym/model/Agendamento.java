@@ -9,6 +9,7 @@ public class Agendamento {
 
  private Long id;
  private Long alocacaoId;
+ private Long atividadeId;
  private String nomeAtividade;
  private String nomeDiaSemana;
  private String nomeTurma;

@@ -1,5 +1,7 @@
 package br.com.barata.baragym.controller.usuario;
 
+import br.com.barata.baragym.controller.usuario.response.UsuarioAgendamentoResponse;
+import br.com.barata.baragym.controller.usuario.response.converter.UsuarioAgendamentoResponseConverter;
 import br.com.barata.baragym.model.Agendamento;
 import br.com.barata.baragym.security.annotation.CheckSecurity;
 import br.com.barata.baragym.service.AgendamentoService;
@@ -18,12 +20,18 @@ public class UsuarioAgendamentoListarController {
  @Autowired
  private AgendamentoService agendamentoService;
 
+ @Autowired
+ private UsuarioAgendamentoResponseConverter converter;
+
+
  @GetMapping
  @CheckSecurity.ValidaMatricula
- public Page<Agendamento> listaAgendamento(@PathVariable("matricula") @NotBlank String matricula,
-										   @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-										   @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
-  return agendamentoService.listarTodosAgendamentosPorMatricula(matricula, PageRequest.of(page, size));
+ public Page<UsuarioAgendamentoResponse> listaAgendamento(@PathVariable("matricula") @NotBlank String matricula,
+                                                          @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                                          @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
+  Page<Agendamento> agendamentoPage = agendamentoService.listarTodosAgendamentosPorMatricula(matricula, PageRequest.of(page, size));
+
+  return converter.convertToResponse(agendamentoPage);
  }
 
 }

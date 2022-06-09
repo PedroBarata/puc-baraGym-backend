@@ -5,6 +5,7 @@ import br.com.barata.baragym.entity.*;
 import br.com.barata.baragym.entity.converter.UsuarioAtividadeConverter;
 import br.com.barata.baragym.exception.AtividadeNaoEncontradaException;
 import br.com.barata.baragym.exception.DiaSemanaNaoEncontradoException;
+import br.com.barata.baragym.exception.UsuarioNaoEncontradoException;
 import br.com.barata.baragym.model.UsuarioAlocacaoAgendamento;
 import br.com.barata.baragym.model.UsuarioAtividade;
 import br.com.barata.baragym.repository.*;
@@ -46,7 +47,8 @@ public class UsuarioAtividadeService {
   Optional<UsuarioEntity> optUsuarioEntity = usuarioRepository.findByMatricula(matricula);
 
   obtemEExcluiAtividadesDoUsuario(optUsuarioEntity.orElseThrow(DiaSemanaNaoEncontradoException::new));
-
+  obtemEExcluiAgendamentosDoUsuario(optUsuarioEntity.orElseThrow(UsuarioNaoEncontradoException::new));
+  
   Date vigenciaInicio = new Date();
   Date fimVigencia = DateUtils.addDays(vigenciaInicio, 30);
 
@@ -72,6 +74,12 @@ public class UsuarioAtividadeService {
  private void obtemEExcluiAtividadesDoUsuario(UsuarioEntity usuario) {
   List<UsuarioAtividadeEntity> persistedEntityList = usuarioAtividadeRepository.findAllByUsuarioMatricula(usuario.getMatricula());
   usuarioAtividadeRepository.deleteAll(persistedEntityList);
+ }
+
+ @Transactional(propagation = Propagation.REQUIRES_NEW)
+ private void obtemEExcluiAgendamentosDoUsuario(UsuarioEntity usuario) {
+  List<AgendamentoEntity> persistedEntityList = agendamentoRepository.findAllByUsuarioMatricula(usuario.getMatricula());
+  agendamentoRepository.deleteAll(persistedEntityList);
  }
 
  @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)

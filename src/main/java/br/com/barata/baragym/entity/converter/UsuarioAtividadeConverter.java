@@ -71,7 +71,6 @@ public class UsuarioAtividadeConverter {
   if (entityList.isEmpty()) {
    return new ArrayList<>();
   }
-
   return entityList
 		  .stream()
 		  .map(entity -> {
@@ -83,6 +82,7 @@ public class UsuarioAtividadeConverter {
 				   .quantidadeSemana(entity.getQuantidadeSemana())
 				   .vigenciaInicio(entity.getVigenciaInicio())
 				   .vigenciaFim(entity.getVigenciaFim())
+				   .valorTotal(entity.getValorTotal())
 				   .build();
 		  })
 		  .collect(Collectors.toList());

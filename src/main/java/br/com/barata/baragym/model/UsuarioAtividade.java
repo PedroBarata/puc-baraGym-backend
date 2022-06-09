@@ -3,6 +3,7 @@ package br.com.barata.baragym.model;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Builder
@@ -15,5 +16,5 @@ public class UsuarioAtividade {
  private Integer quantidadeSemana;
  private Date vigenciaInicio;
  private Date vigenciaFim;
-
+ private BigDecimal valorTotal;
 }

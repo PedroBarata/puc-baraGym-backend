@@ -911,6 +911,10 @@ components:
           type: string
           description: Data de término da vigência do plano (em UTC), D+30 da data `vigenciaInicio`
           example: '2022-07-02T16:00:54.102+00:00'
+        valorTotal:
+          type: number
+          description: Valor total das atividades
+          example: 100.23
     CreateUsuarioAgendamentoRequest:
       type: object
       properties:

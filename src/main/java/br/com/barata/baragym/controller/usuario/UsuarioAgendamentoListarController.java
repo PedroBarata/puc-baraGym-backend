@@ -31,7 +31,7 @@ public class UsuarioAgendamentoListarController {
                                                           @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
   Page<Agendamento> agendamentoPage = agendamentoService.listarTodosAgendamentosPorMatricula(matricula, PageRequest.of(page, size));
 
-  return converter.convertToResponse(agendamentoPage);
+  return converter.convertToResponse(agendamentoPage, PageRequest.of(page, size));
  }
 
 }

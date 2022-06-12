@@ -5,6 +5,7 @@ import br.com.barata.baragym.infrastructure.stereotype.Converter;
 import br.com.barata.baragym.model.Agendamento;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class UsuarioAgendamentoResponseConverter {
   return response;
  }
 
- public Page<UsuarioAgendamentoResponse> convertToResponse(Page<Agendamento> agendamentoPage) {
+ public Page<UsuarioAgendamentoResponse> convertToResponse(Page<Agendamento> agendamentoPage, Pageable pageable) {
   List<UsuarioAgendamentoResponse> responseList = new ArrayList<>();
 
   agendamentoPage.getContent().forEach(agendamento -> {
@@ -44,7 +45,7 @@ public class UsuarioAgendamentoResponseConverter {
    }
   });
 
-  return new PageImpl<>(responseList);
+  return new PageImpl<>(responseList, pageable, agendamentoPage.getTotalPages());
  }
 
  protected UsuarioAgendamentoResponse.UsuarioAgendamento mapAgendamentos(Agendamento agendamento) {

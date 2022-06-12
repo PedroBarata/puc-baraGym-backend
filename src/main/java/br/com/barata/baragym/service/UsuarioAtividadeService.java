@@ -98,7 +98,7 @@ public class UsuarioAtividadeService {
 		  pageable);
 
   Page<AgendamentoEntity> agendamentoEntityPage = agendamentoRepository.findAllByUsuarioMatricula(matricula, pageable);
-  return converter.convertToAlocacaoAgendamentoModel(alocacaoEntityPage, agendamentoEntityPage);
+  return converter.convertToAlocacaoAgendamentoModel(alocacaoEntityPage, agendamentoEntityPage, pageable);
  }
 
 

@@ -10,6 +10,7 @@ import br.com.barata.baragym.model.UsuarioAlocacaoAgendamento;
 import br.com.barata.baragym.model.UsuarioAtividade;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class UsuarioAtividadeConverter {
 		  .build();
  }*/
 
- public Page<UsuarioAlocacaoAgendamento> convertToAlocacaoAgendamentoModel(Page<AlocacaoEntity> alocacaoEntityPage, Page<AgendamentoEntity> agendamentoEntityPage) {
+ public Page<UsuarioAlocacaoAgendamento> convertToAlocacaoAgendamentoModel(Page<AlocacaoEntity> alocacaoEntityPage, Page<AgendamentoEntity> agendamentoEntityPage, Pageable pageable) {
 
   List<UsuarioAlocacaoAgendamento> usuarioAlocacaoAgendamentos = alocacaoEntityPage.getContent().stream().map(alocacaoEntity -> {
 
@@ -43,8 +44,6 @@ public class UsuarioAtividadeConverter {
 		   .stream()
 		   .filter(agendamento -> agendamento.getAlocacao().getId().equals(alocacaoEntity.getId()))
 		   .findAny();
-
-   AtividadeEntity atividadeEntity = alocacaoEntity.getAtividade();
 
    UsuarioAlocacaoAgendamento.UsuarioAlocacaoAgendamentoBuilder usuarioAlocacaoAgendamentoBuilder = UsuarioAlocacaoAgendamento.builder();
 
@@ -64,7 +63,7 @@ public class UsuarioAtividadeConverter {
    return usuarioAlocacaoAgendamentoBuilder.build();
   }).collect(Collectors.toList());
 
-  return new PageImpl<>(usuarioAlocacaoAgendamentos);
+  return new PageImpl<>(usuarioAlocacaoAgendamentos, pageable, alocacaoEntityPage.getTotalPages());
  }
 
  public List<UsuarioAtividade> convertToModel(List<UsuarioAtividadeEntity> entityList) {

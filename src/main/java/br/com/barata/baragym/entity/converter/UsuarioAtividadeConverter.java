@@ -63,7 +63,7 @@ public class UsuarioAtividadeConverter {
    return usuarioAlocacaoAgendamentoBuilder.build();
   }).collect(Collectors.toList());
 
-  return new PageImpl<>(usuarioAlocacaoAgendamentos, pageable, alocacaoEntityPage.getTotalPages());
+  return new PageImpl<>(usuarioAlocacaoAgendamentos, pageable, alocacaoEntityPage.getTotalElements());
  }
 
  public List<UsuarioAtividade> convertToModel(List<UsuarioAtividadeEntity> entityList) {

@@ -45,7 +45,7 @@ public class UsuarioAgendamentoResponseConverter {
    }
   });
 
-  return new PageImpl<>(responseList, pageable, agendamentoPage.getTotalPages());
+  return new PageImpl<>(responseList, pageable, agendamentoPage.getTotalElements());
  }
 
  protected UsuarioAgendamentoResponse.UsuarioAgendamento mapAgendamentos(Agendamento agendamento) {

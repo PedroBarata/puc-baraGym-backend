@@ -22,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AlocacaoService {
@@ -38,6 +40,9 @@ public class AlocacaoService {
 
  @Autowired
  private AtividadeRepository atividadeRepository;
+
+ @Autowired
+ private AgendamentoService agendamentoService;
 
  @Autowired
  private AlocacaoConverter converter;
@@ -69,5 +74,25 @@ public class AlocacaoService {
  public Page<Alocacao> listarTodasAlocacoes(Pageable pageable) {
   Page<AlocacaoEntity> alocacaoEntityPage = alocacaoRepository.findAll(pageable);
   return converter.convertToModel(alocacaoEntityPage);
+ }
+
+ @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+ public void deletarAlocacao(Long alocacaoId) {
+  agendamentoService.deletaAgendamentosPorAlocacaoId(alocacaoId);
+  alocacaoRepository.deleteById(alocacaoId);
+ }
+
+ @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+ public void deletarAlocacaoPorAtividadeId(Long atividadeId) {
+  List<Long> alocacaoIds = alocacaoRepository.findByAtividadeId(atividadeId).stream().map(AlocacaoEntity::getId).collect(Collectors.toList());
+  alocacaoIds.forEach(this::deletarAlocacao);
+  alocacaoIds.forEach(alocacaoRepository::deleteById);
+ }
+
+ @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+ public void deletarAlocacaoPorTurmaId(Long turmaid) {
+  List<Long> alocacaoIds = alocacaoRepository.findByTurmaId(turmaid).stream().map(AlocacaoEntity::getId).collect(Collectors.toList());
+  alocacaoIds.forEach(this::deletarAlocacao);
+  alocacaoIds.forEach(alocacaoRepository::deleteById);
  }
 }

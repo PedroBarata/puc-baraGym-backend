@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AgendamentoService {
@@ -48,7 +50,7 @@ public class AgendamentoService {
  @Transactional(propagation = Propagation.REQUIRES_NEW)
  public Agendamento criarAgendamento(AgendamentoRequest request, String matricula) {
 
-  if (jaPossuiUmAgendamento(request.getAlocacaoId())) {
+  if (jaPossuiUmAgendamento(matricula, request.getAlocacaoId())) {
    throw new AgendamentoJaExistenteException();
   }
   Optional<AlocacaoEntity> optAlocacaoEntity = alocacaoRepository.findById(request.getAlocacaoId());
@@ -76,8 +78,8 @@ public class AgendamentoService {
   return converter.convertToModel(agendamentoEntityPage);
  }
 
- public boolean jaPossuiUmAgendamento(Long alocacaoId) {
-  return agendamentoRepository.findByAlocacaoId(alocacaoId).isPresent();
+ public boolean jaPossuiUmAgendamento(String matricula, Long alocacaoId) {
+  return agendamentoRepository.findByUsuarioMatriculaAndAlocacaoId(matricula, alocacaoId).isPresent();
  }
 
  @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
@@ -95,4 +97,10 @@ public class AgendamentoService {
  public void deletarAgendamento(Long agendamentoId) {
   agendamentoRepository.deleteById(agendamentoId);
  }
+
+ public void deletaAgendamentosPorAlocacaoId(Long alocacaoId) {
+  List<Long> agendamentos = agendamentoRepository.findByAlocacaoId(alocacaoId).stream().map(AgendamentoEntity::getId).collect(Collectors.toList());
+  agendamentoRepository.deleteAllById(agendamentos);
+ }
+
 }

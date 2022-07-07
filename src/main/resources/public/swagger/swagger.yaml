@@ -373,7 +373,33 @@ paths:
           description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
         '500':
           description: Erro interno
-
+  /turmas/{turmaId}:
+    delete:
+      tags:
+        - turma
+      summary: Deleta uma turma
+        description: |
+        Apenas administradores (`ADMIN`).
+      security:
+        - bearerAuthToken: [ ]
+      parameters:
+        - name: turmaId
+          in: path
+          description: Identificador único da turma
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
   
   ######################
   ##### ATIVIDADE ######
@@ -504,6 +530,33 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UsuarioAtividadeResponse'
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
+  /atividades/{atividadeId}:
+    delete:
+      tags:
+        - atividade
+      summary: Deleta uma atividade
+        description: |
+        Apenas administradores (`ADMIN`).
+      security:
+        - bearerAuthToken: [ ]
+      parameters:
+        - name: turmaId
+          in: path
+          description: Identificador único da atividade
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
         '400':
           description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
         '401':
@@ -686,7 +739,33 @@ paths:
           description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
         '500':
           description: Erro interno
-
+  /alocacoes/{alocacaoId}:
+  delete:
+    tags:
+      - turma
+    summary: Deleta uma alocacao
+      description: |
+      Apenas administradores (`ADMIN`).
+    security:
+      - bearerAuthToken: [ ]
+    parameters:
+      - name: alocacaoId
+        in: path
+        description: Identificador único da alocacao
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: OK
+      '400':
+        description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+      '401':
+        description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+      '403':
+        description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+      '500':
+        description: Erro interno
 
 components:
   securitySchemes:

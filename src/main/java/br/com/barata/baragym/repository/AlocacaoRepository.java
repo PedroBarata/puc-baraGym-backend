@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface AlocacaoRepository extends JpaRepository<AlocacaoEntity, Long>, PagingAndSortingRepository<AlocacaoEntity, Long> {
 
@@ -16,6 +18,10 @@ public interface AlocacaoRepository extends JpaRepository<AlocacaoEntity, Long>,
          "atividade",
          "diaSemana"})
  Page<AlocacaoEntity> findByAtividadeId(Long atividadeId, Pageable pageable);
+
+ List<AlocacaoEntity> findByAtividadeId(Long atividadeId);
+
+ List<AlocacaoEntity> findByTurmaId(Long turmaId);
 
  @EntityGraph(attributePaths = {
          "turma",

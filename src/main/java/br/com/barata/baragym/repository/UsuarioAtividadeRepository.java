@@ -19,4 +19,6 @@ public interface UsuarioAtividadeRepository extends JpaRepository<UsuarioAtivida
  List<UsuarioAtividadeEntity> findAllByUsuarioMatricula(String matricula);
 
  UsuarioAtividadeEntity findByUsuarioMatriculaAndAtividadeId(String matricula, Long atividadeId);
+
+ List<UsuarioAtividadeEntity> findByAtividadeId(Long atividadeId);
 }

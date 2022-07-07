@@ -31,7 +31,10 @@ public interface AgendamentoRepository extends JpaRepository<AgendamentoEntity, 
 		 "alocacao.diaSemana"})
  Optional<AgendamentoEntity> findById(Long id);
 
- Optional<AgendamentoEntity> findByAlocacaoId(Long alocacaoId);
+ Optional<AgendamentoEntity> findByUsuarioMatriculaAndAlocacaoId(String matricula, Long alocacaoId);
 
  List<AgendamentoEntity> findAllByUsuarioMatricula(String matricula);
+
+ List<AgendamentoEntity> findByAlocacaoId(Long alocacaoId);
+
 }

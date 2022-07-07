@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioAtividadeService {
@@ -93,12 +94,18 @@ public class UsuarioAtividadeService {
   Optional<UsuarioAtividadeEntity> optUsuarioAtividade = usuarioAtividadeRepository.findById(usuarioAtividadeId);
 
   Page<AlocacaoEntity> alocacaoEntityPage = alocacaoRepository.findByAtividadeId(
-		  optUsuarioAtividade.orElseThrow(AtividadeNaoEncontradaException::new)
-				  .getAtividade().getId(),
-		  pageable);
+          optUsuarioAtividade.orElseThrow(AtividadeNaoEncontradaException::new)
+                  .getAtividade().getId(),
+          pageable);
 
   Page<AgendamentoEntity> agendamentoEntityPage = agendamentoRepository.findAllByUsuarioMatricula(matricula, pageable);
   return converter.convertToAlocacaoAgendamentoModel(alocacaoEntityPage, agendamentoEntityPage, pageable);
+ }
+
+ @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+ public void deletarUsuarioAtividadePorAtividadeId(Long atividadeId) {
+  List<Long> usuarioAtividadeIds = usuarioAtividadeRepository.findByAtividadeId(atividadeId).stream().map(UsuarioAtividadeEntity::getId).collect(Collectors.toList());
+  usuarioAtividadeIds.forEach(usuarioAtividadeRepository::deleteById);
  }
 
 

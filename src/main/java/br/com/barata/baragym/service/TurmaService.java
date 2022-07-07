@@ -21,13 +21,16 @@ public class TurmaService {
  @Autowired
  private TurmaConverter converter;
 
+ @Autowired
+ private AlocacaoService alocacaoService;
+
  @Transactional(propagation = Propagation.REQUIRES_NEW)
  public Turma criarTurma(TurmaRequest request) {
   TurmaEntity entity = TurmaEntity
-		  .builder()
-		  .nome(request.getNome())
-		  .capacidade(request.getCapacidade())
-		  .build();
+          .builder()
+          .nome(request.getNome())
+          .capacidade(request.getCapacidade())
+          .build();
 
   TurmaEntity persistedEntity = repository.save(entity);
 
@@ -38,5 +41,11 @@ public class TurmaService {
  public Page<Turma> listarTodasTurmas(Pageable pageable) {
   Page<TurmaEntity> usuarioEntityPage = repository.findAll(pageable);
   return converter.convertToModel(usuarioEntityPage);
+ }
+
+ @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+ public void deletarTurma(Long turmaId) {
+  alocacaoService.deletarAlocacaoPorTurmaId(turmaId);
+  repository.deleteById(turmaId);
  }
 }

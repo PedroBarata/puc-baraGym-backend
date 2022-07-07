@@ -20,10 +20,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class AtividadeService {
 
  @Autowired
- private AtividadeRepository atividadeRepo;
+ private AtividadeRepository atividadeRepository;
 
  @Autowired
- private AlocacaoRepository alocacaoRepo;
+ private AlocacaoRepository alocacaoRepository;
+
+ @Autowired
+ private AlocacaoService alocacaoService;
+
+ @Autowired
+ private UsuarioAtividadeService usuarioAtividadeService;
+
+ @Autowired
+ private AgendamentoService agendamentoService;
 
  @Autowired
  private AtividadeConverter atividadeConverter;
@@ -40,20 +49,27 @@ public class AtividadeService {
           .valorDia(request.getValorDia())
           .build();
 
-  AtividadeEntity persistedEntity = atividadeRepo.save(entity);
+  AtividadeEntity persistedEntity = atividadeRepository.save(entity);
 
   return atividadeConverter.convertToModel(persistedEntity);
  }
 
  @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
  public Page<Atividade> listarTodasAtividades(Pageable pageable) {
-  Page<AtividadeEntity> atividadeEntityPage = atividadeRepo.findAll(pageable);
+  Page<AtividadeEntity> atividadeEntityPage = atividadeRepository.findAll(pageable);
   return atividadeConverter.convertToModel(atividadeEntityPage);
  }
 
  @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
  public Page<Alocacao> listarAlocacoesPorAtividade(Long atividadeId, Pageable pageable) {
-  Page<AlocacaoEntity> alocacaoEntityPage = alocacaoRepo.findByAtividadeId(atividadeId, pageable);
+  Page<AlocacaoEntity> alocacaoEntityPage = alocacaoRepository.findByAtividadeId(atividadeId, pageable);
   return alocacaoConverter.convertToModel(alocacaoEntityPage);
+ }
+
+ @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+ public void deletarAtividade(Long atividadeId) {
+  alocacaoService.deletarAlocacaoPorAtividadeId(atividadeId);
+  usuarioAtividadeService.deletarUsuarioAtividadePorAtividadeId(atividadeId);
+  alocacaoRepository.deleteById(atividadeId);
  }
 }

@@ -43,7 +43,7 @@ public class TurmaService {
   return converter.convertToModel(usuarioEntityPage);
  }
 
- @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+ @Transactional(propagation = Propagation.REQUIRES_NEW)
  public void deletarTurma(Long turmaId) {
   alocacaoService.deletarAlocacaoPorTurmaId(turmaId);
   repository.deleteById(turmaId);

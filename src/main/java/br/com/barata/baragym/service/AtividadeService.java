@@ -66,10 +66,10 @@ public class AtividadeService {
   return alocacaoConverter.convertToModel(alocacaoEntityPage);
  }
 
- @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+ @Transactional(propagation = Propagation.REQUIRES_NEW)
  public void deletarAtividade(Long atividadeId) {
   alocacaoService.deletarAlocacaoPorAtividadeId(atividadeId);
   usuarioAtividadeService.deletarUsuarioAtividadePorAtividadeId(atividadeId);
-  alocacaoRepository.deleteById(atividadeId);
+  atividadeRepository.deleteById(atividadeId);
  }
 }

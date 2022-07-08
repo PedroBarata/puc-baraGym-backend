@@ -76,23 +76,21 @@ public class AlocacaoService {
   return converter.convertToModel(alocacaoEntityPage);
  }
 
- @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+ @Transactional(propagation = Propagation.REQUIRES_NEW)
  public void deletarAlocacao(Long alocacaoId) {
   agendamentoService.deletaAgendamentosPorAlocacaoId(alocacaoId);
   alocacaoRepository.deleteById(alocacaoId);
  }
 
- @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+ @Transactional(propagation = Propagation.REQUIRES_NEW)
  public void deletarAlocacaoPorAtividadeId(Long atividadeId) {
   List<Long> alocacaoIds = alocacaoRepository.findByAtividadeId(atividadeId).stream().map(AlocacaoEntity::getId).collect(Collectors.toList());
   alocacaoIds.forEach(this::deletarAlocacao);
-  alocacaoIds.forEach(alocacaoRepository::deleteById);
  }
 
- @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
- public void deletarAlocacaoPorTurmaId(Long turmaid) {
-  List<Long> alocacaoIds = alocacaoRepository.findByTurmaId(turmaid).stream().map(AlocacaoEntity::getId).collect(Collectors.toList());
+ @Transactional(propagation = Propagation.REQUIRES_NEW)
+ public void deletarAlocacaoPorTurmaId(Long turmaId) {
+  List<Long> alocacaoIds = alocacaoRepository.findByTurmaId(turmaId).stream().map(AlocacaoEntity::getId).collect(Collectors.toList());
   alocacaoIds.forEach(this::deletarAlocacao);
-  alocacaoIds.forEach(alocacaoRepository::deleteById);
  }
 }

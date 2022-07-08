@@ -102,7 +102,7 @@ public class UsuarioAtividadeService {
   return converter.convertToAlocacaoAgendamentoModel(alocacaoEntityPage, agendamentoEntityPage, pageable);
  }
 
- @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+ @Transactional(propagation = Propagation.REQUIRES_NEW)
  public void deletarUsuarioAtividadePorAtividadeId(Long atividadeId) {
   List<Long> usuarioAtividadeIds = usuarioAtividadeRepository.findByAtividadeId(atividadeId).stream().map(UsuarioAtividadeEntity::getId).collect(Collectors.toList());
   usuarioAtividadeIds.forEach(usuarioAtividadeRepository::deleteById);

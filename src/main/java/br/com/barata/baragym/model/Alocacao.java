@@ -9,9 +9,10 @@ public class Alocacao {
 
  private Long id;
 
- private String nomeAtividade;
- private String nomeDiaSemana;
- private String nomeTurma;
+ private GenericIdAndNome atividade;
+ private GenericIdAndNome diaSemana;
+ private GenericIdAndNome turma;
+
  private String horaInicio;
  private String horaFim;
 

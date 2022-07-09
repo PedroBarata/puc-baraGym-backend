@@ -9,6 +9,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AlocacaoRepository extends JpaRepository<AlocacaoEntity, Long>, PagingAndSortingRepository<AlocacaoEntity, Long> {
@@ -24,8 +25,14 @@ public interface AlocacaoRepository extends JpaRepository<AlocacaoEntity, Long>,
  List<AlocacaoEntity> findByTurmaId(Long turmaId);
 
  @EntityGraph(attributePaths = {
-         "turma",
-         "atividade",
-         "diaSemana"})
+		 "turma",
+		 "atividade",
+		 "diaSemana"})
  Page<AlocacaoEntity> findAll(Pageable pageable);
+
+ @EntityGraph(attributePaths = {
+		 "turma",
+		 "atividade",
+		 "diaSemana"})
+ Optional<AlocacaoEntity> findById(Long atividadeId);
 }

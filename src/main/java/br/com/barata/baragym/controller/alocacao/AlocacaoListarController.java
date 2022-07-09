@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.NotBlank;
 
 @RestController
 @RequestMapping(value = "/alocacoes", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -26,6 +26,12 @@ public class AlocacaoListarController {
                                        @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
 
   return alocacaoService.listarTodasAlocacoes(PageRequest.of(page, size));
+ }
+
+ @GetMapping("/{alocacaoId}")
+ @PreAuthorize("hasAnyRole('ADMIN')")
+ public Alocacao obtemAlocacao(@PathVariable("alocacaoId") @NotBlank Long alocacaoId) {
+  return alocacaoService.obterAlocacao(alocacaoId);
  }
 
 }

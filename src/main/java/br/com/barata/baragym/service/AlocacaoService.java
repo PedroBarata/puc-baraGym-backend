@@ -6,10 +6,7 @@ import br.com.barata.baragym.entity.AtividadeEntity;
 import br.com.barata.baragym.entity.DiaSemanaEntity;
 import br.com.barata.baragym.entity.TurmaEntity;
 import br.com.barata.baragym.entity.converter.AlocacaoConverter;
-import br.com.barata.baragym.exception.AtividadeNaoEncontradaException;
-import br.com.barata.baragym.exception.DiaSemanaNaoEncontradoException;
-import br.com.barata.baragym.exception.PeriodoDeTempoInvalidoException;
-import br.com.barata.baragym.exception.TurmaNaoEncontradaException;
+import br.com.barata.baragym.exception.*;
 import br.com.barata.baragym.model.Alocacao;
 import br.com.barata.baragym.repository.AlocacaoRepository;
 import br.com.barata.baragym.repository.AtividadeRepository;
@@ -49,7 +46,6 @@ public class AlocacaoService {
 
  @Transactional(propagation = Propagation.REQUIRES_NEW)
  public void criarAlocacao(AlocacaoRequest request) {
-
   if (!request.periodoEhValido()) {
    throw new PeriodoDeTempoInvalidoException();
   }
@@ -64,8 +60,7 @@ public class AlocacaoService {
           .diaSemana(optDiaSemanaEntity.orElseThrow(DiaSemanaNaoEncontradoException::new))
           .turma(optTurmaEntity.orElseThrow(TurmaNaoEncontradaException::new))
           .horaInicio(request.getHoraInicio())
-          .horaFim(request.getHoraFim())
-          .build();
+          .horaFim(request.getHoraFim()).build();
 
   alocacaoRepository.save(entity);
  }
@@ -92,5 +87,31 @@ public class AlocacaoService {
  public void deletarAlocacaoPorTurmaId(Long turmaId) {
   List<Long> alocacaoIds = alocacaoRepository.findByTurmaId(turmaId).stream().map(AlocacaoEntity::getId).collect(Collectors.toList());
   alocacaoIds.forEach(this::deletarAlocacao);
+ }
+
+ @Transactional(propagation = Propagation.REQUIRES_NEW)
+ public void atualizarAlocacao(AlocacaoRequest request, Long alocacaoId) {
+  if (!request.periodoEhValido()) {
+   throw new PeriodoDeTempoInvalidoException();
+  }
+  AlocacaoEntity entity = alocacaoRepository.findById(alocacaoId).orElseThrow(AlocacaoNaoEncontradaException::new);
+
+  Optional<TurmaEntity> optTurmaEntity = turmaRepository.findById(request.getTurmaId());
+  Optional<AtividadeEntity> optAtividadeEntity = atividadeRepository.findById(request.getAtividadeId());
+  Optional<DiaSemanaEntity> optDiaSemanaEntity = diaSemanaRepository.findById(request.getDiaSemanaId());
+
+  entity.setAtividade(optAtividadeEntity.orElseThrow(AtividadeNaoEncontradaException::new));
+  entity.setDiaSemana(optDiaSemanaEntity.orElseThrow(DiaSemanaNaoEncontradoException::new));
+  entity.setTurma(optTurmaEntity.orElseThrow(TurmaNaoEncontradaException::new));
+  entity.setHoraFim(request.getHoraFim());
+  entity.setHoraInicio(request.getHoraInicio());
+
+  alocacaoRepository.save(entity);
+ }
+
+ @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+ public Alocacao obterAlocacao(Long alocacaoId) {
+  AlocacaoEntity entity = alocacaoRepository.findById(alocacaoId).orElseThrow(AlocacaoNaoEncontradaException::new);
+  return converter.convertToModel(entity);
  }
 }

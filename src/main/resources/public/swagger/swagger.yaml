@@ -374,6 +374,70 @@ paths:
         '500':
           description: Erro interno
   /turmas/{turmaId}:
+    get:
+      tags:
+        - turma
+      summary: |
+        Obtem uma turma
+      description: |
+        Apenas administradores (`ADMIN`).
+      security:
+        - bearerAuthToken: [ ]
+      parameters:
+        - name: turmaId
+          in: path
+          description: Identificador único da turma
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TurmaResponse'
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
+    put:
+      tags:
+        - turma
+      summary: |
+        Atualiza uma turma
+      description: |
+        Apenas administradores (`ADMIN`).
+      security:
+        - bearerAuthToken: [ ]
+      parameters:
+        - name: turmaId
+          in: path
+          description: Identificador único da turma
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Corpo da requisição de atualização da turma.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTurmaRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
     delete:
       tags:
         - turma
@@ -540,6 +604,70 @@ paths:
         '500':
           description: Erro interno
   /atividades/{atividadeId}:
+    get:
+      tags:
+        - atividade
+      summary: |
+        Obtem uma atividade
+      description: |
+        Apenas administradores (`ADMIN`).
+      security:
+        - bearerAuthToken: [ ]
+      parameters:
+        - name: atividadeId
+          in: path
+          description: Identificador único da atividade
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AtividadeResponse'
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
+    put:
+      tags:
+        - atividade
+      summary: |
+        Atualiza uma atividade
+      description: |
+        Apenas administradores (`ADMIN`).
+      security:
+        - bearerAuthToken: [ ]
+      parameters:
+        - name: atividadeId
+          in: path
+          description: Identificador único da atividade
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Corpo da requisição de atualização da atividade.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAtividadeRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
     delete:
       tags:
         - atividade
@@ -550,7 +678,7 @@ paths:
       security:
         - bearerAuthToken: [ ]
       parameters:
-        - name: turmaId
+        - name: atividadeId
           in: path
           description: Identificador único da atividade
           required: true
@@ -742,6 +870,70 @@ paths:
         '500':
           description: Erro interno
   /alocacoes/{alocacaoId}:
+    get:
+      tags:
+        - alocacao
+      summary: |
+        Obtém uma alocacao
+      description: |
+        Apenas administradores (`ADMIN`).
+      security:
+        - bearerAuthToken: [ ]
+      parameters:
+        - name: alocacaoId
+          in: path
+          description: Identificador único da alocacao
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlocacaoResponse'
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
+    put:
+      tags:
+        - alocacao
+      summary: |
+        Atualiza uma alocacao
+      description: |
+        Apenas administradores (`ADMIN`).
+      security:
+        - bearerAuthToken: [ ]
+      parameters:
+        - name: alocacaoId
+          in: path
+          description: Identificador único da alocacao
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Corpo da requisição de atualização da alocacao.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAlocacaoRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request. Falha na validação dos dados de entrada ou violação de regras de negócio.
+        '401':
+          description: Unauthorized. Retornado quando a requisição não envia as credenciais necessárias para identificação e autorização.
+        '403':
+          description: Forbidden. As credenciais fornecidas são insuficientes para realizar esta operação.
+        '500':
+          description: Erro interno
     delete:
       tags:
         - alocacao
@@ -1371,18 +1563,15 @@ components:
           type: number
           description: identificador único da alocacao
           example: 12
-        nomeAtividade:
-          type: string
-          description: nome da atividade da alocacao
-          example: 'Spinning'
-        nomeDiaSemana:
-          type: string
-          description: nome do dia da semana da alocacao
-          example: 'Terça-feira'
-        nomeTurma:
-          type: string
-          description: nome da turma/sala da alocacao
-          example: 'Turma 1'
+        atividade:
+          description: nome e id da atividade da alocacao
+          $ref: '#/components/schemas/IdAndNomeResponse'
+        diaSemana:
+          description: nome e id do dia da semana da alocacao
+          $ref: '#/components/schemas/IdAndNomeResponse'
+        turma:
+          description: nome e id da turma da alocacao
+          $ref: '#/components/schemas/IdAndNomeResponse'
         horaInicio:
           type: string
           description: Horário de início da alocacao
@@ -1434,3 +1623,15 @@ components:
           type: boolean
           example: false
           description: Verifica se a lista está vazia ou não.
+
+    IdAndNomeResponse:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+          description: Identificador único
+        nome:
+          type: string
+          example: nomeDominio
+          description: Nome do dominio

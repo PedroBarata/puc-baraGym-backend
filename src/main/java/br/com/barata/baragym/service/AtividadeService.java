@@ -5,6 +5,7 @@ import br.com.barata.baragym.entity.AlocacaoEntity;
 import br.com.barata.baragym.entity.AtividadeEntity;
 import br.com.barata.baragym.entity.converter.AlocacaoConverter;
 import br.com.barata.baragym.entity.converter.AtividadeConverter;
+import br.com.barata.baragym.exception.AtividadeNaoEncontradaException;
 import br.com.barata.baragym.model.Alocacao;
 import br.com.barata.baragym.model.Atividade;
 import br.com.barata.baragym.repository.AlocacaoRepository;
@@ -71,5 +72,23 @@ public class AtividadeService {
   alocacaoService.deletarAlocacaoPorAtividadeId(atividadeId);
   usuarioAtividadeService.deletarUsuarioAtividadePorAtividadeId(atividadeId);
   atividadeRepository.deleteById(atividadeId);
+ }
+
+ @Transactional(propagation = Propagation.REQUIRES_NEW)
+ public void atualizarAtividade(AtividadeRequest request, Long atividadeId) {
+  AtividadeEntity entity = atividadeRepository.findById(atividadeId).orElseThrow(AtividadeNaoEncontradaException::new);
+
+  entity.setDescricao(request.getDescricao());
+  entity.setNome(request.getNome());
+  entity.setValorDia(request.getValorDia());
+
+  atividadeRepository.save(entity);
+ }
+
+ @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+ public Atividade obterAtividade(Long atividadeId) {
+  AtividadeEntity entity = atividadeRepository.findById(atividadeId).orElseThrow(AtividadeNaoEncontradaException::new);
+
+  return atividadeConverter.convertToModel(entity);
  }
 }

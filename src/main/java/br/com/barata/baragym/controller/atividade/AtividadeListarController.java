@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
@@ -36,5 +37,12 @@ public class AtividadeListarController {
 
   return atividadeService.listarAlocacoesPorAtividade(atividadeId, PageRequest.of(page, size));
  }
+
+ @GetMapping("/{atividadeId}")
+ @PreAuthorize("hasAnyRole('ADMIN')")
+ public Atividade obtemAtividade(@PathVariable("atividadeId") @NotBlank Long atividadeId) {
+  return atividadeService.obterAtividade(atividadeId);
+ }
+
 
 }
